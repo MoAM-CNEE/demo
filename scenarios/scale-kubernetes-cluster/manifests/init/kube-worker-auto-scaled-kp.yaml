@@ -1,0 +1,12 @@
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: KeypairV2
+metadata:
+  name: kubernetes-worker-auto-scaled-kp
+  labels:
+    name: kubernetes-worker-auto-scaled-kp
+spec:
+  forProvider:
+    name: kubernetes-worker-auto-scaled-kp
+    publicKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCo2UR667LO2TEzLKK1BCDvJGRkG9enCHOyYirsROOXyTKpqSzbYzlJB7uDtkUQQ9IxKY/q6NIn0HiY6aJWoNo05EVFrKNi07whBhrjtsdlNFWGEFq0tmlUM/l4TnirMogoJ5ZNl/nzm8DR9/1K/fBCzVdJZH7vWyfp/msRjaLZVNrifdQraoGti8fl810kbxDCsbcEhKxbS1UcLeTnvS+umn27gQidycKGD7Uz/bTzFwca2h9o6kk/X739oje6iBm7ArcPazhUcyQNx3o/R7m85wXbHkKA2uGWUc7SHE695h8Bvdx82GhcgPGuBDDpaKHKOtrbP8aKHJ7F37uiWA65
+  providerConfigRef:
+    name: provider-config-openstack

@@ -1,0 +1,30 @@
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: 20-rabbitmq-svc
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: rabbitmq
+        annotations:
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: '9090'
+        labels:
+          name: rabbitmq
+        namespace: sock-shop
+      spec:
+        ports:
+        - port: 5672
+          name: rabbitmq
+          targetPort: 5672
+        - port: 9090
+          name: exporter
+          targetPort: exporter
+          protocol: TCP
+        selector:
+          name: rabbitmq
+  providerConfigRef:
+    name: provider-config-kubernetes

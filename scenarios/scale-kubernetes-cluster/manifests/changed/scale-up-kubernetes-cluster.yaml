@@ -1,0 +1,26 @@
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: InstanceV2
+metadata:
+  name: kube-worker-auto-scaled-i
+  labels:
+    group: kube-worker-auto-scaled
+spec:
+  forProvider:
+    region: RegionOne
+    name: kube-worker-auto-scaled-i
+    imageId: 70a1dc73-f794-439f-8dd2-9e5cf8a73d5a
+    flavorId: 414a6a89-57c3-4331-9a05-0a53fc9a7d02
+    keyPairSelector:
+      matchLabels:
+        name: kubernetes-worker-auto-scaled-kp
+    userData: |
+      #!/bin/bash
+      sudo apt -y install nmap
+      sudo cp /home/ubuntu/kubernetes-lab-setup/configs/join_cluster.service /etc/systemd/system/join_cluster.service
+      chmod +x /home/ubuntu/kubernetes-lab-setup/scripts/kube_setup/join_cluster.sh
+      sudo systemctl enable join_cluster.service
+      sudo systemctl start join_cluster.service
+    network:
+    - name: ii-executor-network
+  providerConfigRef:
+    name: provider-config-openstack
