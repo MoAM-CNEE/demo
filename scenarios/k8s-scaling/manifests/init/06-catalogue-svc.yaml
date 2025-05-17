@@ -1,0 +1,24 @@
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: 06-catalogue-svc
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: catalogue
+        annotations:
+          prometheus.io/scrape: 'true'
+        labels:
+          name: catalogue
+        namespace: sock-shop
+      spec:
+        ports:
+        - port: 80
+          targetPort: 80
+        selector:
+          name: catalogue
+  providerConfigRef:
+    name: provider-config-kubernetes

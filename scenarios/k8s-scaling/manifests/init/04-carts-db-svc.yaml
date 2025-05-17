@@ -1,0 +1,22 @@
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: 04-carts-db-svc
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: carts-db
+        labels:
+          name: carts-db
+        namespace: sock-shop
+      spec:
+        ports:
+        - port: 27017
+          targetPort: 27017
+        selector:
+          name: carts-db
+  providerConfigRef:
+    name: provider-config-kubernetes
