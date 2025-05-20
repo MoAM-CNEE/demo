@@ -1,0 +1,81 @@
+import org.k8loud.executor.actions.moam.statemanager.CreateEntityAction
+import org.k8loud.executor.actions.moam.statemanager.EntityType
+import org.k8loud.executor.actions.moam.statemanager.UpdateEntityAction
+import org.k8loud.executor.actions.moam.statemanager.DeleteEntityAction
+
+global org.k8loud.executor.drools.UsableServices usableServices;
+global org.k8loud.executor.drools.CronChecker cronChecker;
+
+dialect "mvel"
+
+rule "test"
+    when
+        eval( true )
+    then
+        System.out.println("Processing 'test'...");
+
+        System.out.println("test rule triggered");
+
+        System.out.println("...Processed 'test'");
+end
+
+rule "create-entity"
+    when
+        eval(false && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
+    then
+    stateManagerService = usableServices.getStateManagerService();
+    definition = "{\n" +
+                 "  \"apiVersion\": \"kubernetes.crossplane.io/v1alpha2\",\n" +
+                 "  \"kind\": \"Object\",\n" +
+                 "  \"metadata\": {\n" +
+                 "    \"name\": \"drools-test\"\n" +
+                 "  },\n" +
+                 "  \"spec\": {\n" +
+                 "    \"forProvider\": {\n" +
+                 "      \"manifest\": {\n" +
+                 "        \"apiVersion\": \"v1\",\n" +
+                 "        \"kind\": \"Namespace\",\n" +
+                 "        \"metadata\": {\n" +
+                 "          \"name\": \"drools-test\"\n" +
+                 "        }\n" +
+                 "      }\n" +
+                 "    },\n" +
+                 "    \"providerConfigRef\": {\n" +
+                 "      \"name\": \"provider-config-kubernetes\"\n" +
+                 "    }\n" +
+                 "  }\n" +
+                 "}";
+    CreateEntityAction.builder()
+        .type(EntityType.ENVIRONMENT_ENTITY)
+        .definition(definition)
+        .stateManagerService(stateManagerService)
+        .build()
+        .execute();
+end
+
+rule "update-entity"
+    when
+        eval(false && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
+    then
+    stateManagerService = usableServices.getStateManagerService();
+    UpdateEntityAction.builder()
+        .type(EntityType.ENVIRONMENT_ENTITY)
+        .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
+        .lambdas("{\".spec.forProvider.manifest.metadata.name\": \". + \\\"-updated\\\"\"}")
+        .stateManagerService(stateManagerService)
+        .build()
+        .execute();
+end
+
+rule "delete-entity"
+    when
+        eval(true && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
+    then
+    stateManagerService = usableServices.getStateManagerService();
+    DeleteEntityAction.builder()
+        .type(EntityType.ENVIRONMENT_ENTITY)
+        .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
+        .stateManagerService(stateManagerService)
+        .build()
+        .execute();
+end
