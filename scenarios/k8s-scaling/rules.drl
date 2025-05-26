@@ -17,9 +17,14 @@ rule "scale-front-end-up"
         eval(latency > 60 &&
              cronChecker.checkPatternForSession("* */3 * ? * * *"))
     then
-//                    .namespace("sock-shop")
-//                    .resourceType("Deployment")
-//                    .resourceName("front-end")
+        stateManagerService = usableServices.getStateManagerService();
+        UpdateEntityAction.builder()
+            .type(EntityType.ENVIRONMENT_ENTITY)
+            .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '09-front-end-dep' and namespace = 'scenario-k8s-scaling'")
+            .lambdas("{\".spec.forProvider.manifest.spec.replicas\": \". + 1\"}")
+            .stateManagerService(stateManagerService)
+            .build()
+            .execute();
 end
 
 rule "scale-front-end-down"
@@ -31,9 +36,14 @@ rule "scale-front-end-down"
         eval(latency < 20 &&
              cronChecker.checkPatternForSession("* */3 * ? * * *"))
     then
-//                .namespace("sock-shop")
-//                .resourceType("Deployment")
-//                .resourceName("front-end")
+        stateManagerService = usableServices.getStateManagerService();
+        UpdateEntityAction.builder()
+            .type(EntityType.ENVIRONMENT_ENTITY)
+            .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '09-front-end-dep' and namespace = 'scenario-k8s-scaling'")
+            .lambdas("{\".spec.forProvider.manifest.spec.replicas\": \". - 1\"}")
+            .stateManagerService(stateManagerService)
+            .build()
+            .execute();
 end
 
 rule "scale-user-up"
@@ -45,9 +55,14 @@ rule "scale-user-up"
         eval(latency > 10 &&
              cronChecker.checkPatternForSession("* */2 * ? * * *"))
     then
-//                    .namespace("sock-shop")
-//                    .resourceType("Deployment")
-//                    .resourceName("user")
+        stateManagerService = usableServices.getStateManagerService();
+        UpdateEntityAction.builder()
+            .type(EntityType.ENVIRONMENT_ENTITY)
+            .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '27-user-db-dep' and namespace = 'scenario-k8s-scaling'")
+            .lambdas("{\".spec.forProvider.manifest.spec.replicas\": \". + 1\"}")
+            .stateManagerService(stateManagerService)
+            .build()
+            .execute();
 end
 
 rule "scale-user-down"
@@ -59,7 +74,12 @@ rule "scale-user-down"
         eval(v < 2 &&
              cronChecker.checkPatternForSession("* */2 * ? * * *"))
     then
-//                        .namespace("sock-shop")
-//                        .resourceType("Deployment")
-//                        .resourceName("user")
+        stateManagerService = usableServices.getStateManagerService();
+        UpdateEntityAction.builder()
+            .type(EntityType.ENVIRONMENT_ENTITY)
+            .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '27-user-db-dep' and namespace = 'scenario-k8s-scaling'")
+            .lambdas("{\".spec.forProvider.manifest.spec.replicas\": \". - 1\"}")
+            .stateManagerService(stateManagerService)
+            .build()
+            .execute();
 end

@@ -69,7 +69,7 @@ end
 
 rule "delete-entity"
     when
-        eval(true && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
+        eval(false && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
     then
     stateManagerService = usableServices.getStateManagerService();
     DeleteEntityAction.builder()

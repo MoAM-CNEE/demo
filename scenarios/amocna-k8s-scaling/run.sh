@@ -3,10 +3,6 @@
 # shellcheck disable=SC2046
 echo "$(date +'%Y-%m-%d %T') start test"
 
-cd "$(dirname "$0")"
-kubectl create namespace scenario-k8s-scaling
-kubectl apply -f manifests/init --namespace scenario-k8s-scaling
-
 curr=0
 for ((i=1; i<=6; i++)); do
     ((curr++))

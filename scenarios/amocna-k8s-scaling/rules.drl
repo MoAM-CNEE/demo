@@ -1,0 +1,87 @@
+import io.github.hephaestusmetrics.model.metrics.Metric;
+import org.k8loud.executor.actions.kubernetes.HorizontalScalingAction
+
+global org.k8loud.executor.drools.UsableServices usableServices;
+global org.k8loud.executor.drools.CronChecker cronChecker;
+
+dialect "mvel"
+
+rule "scale-front-end-up"
+    when
+        m : Metric(
+            queryTag == "front-end-latency",
+            latency: value
+        );
+        eval(latency > 60 &&
+             cronChecker.checkPatternForSession("* */3 * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                    .kubernetesService(kubernetesService)
+                    .namespace("sock-shop")
+                    .resourceType("Deployment")
+                    .resourceName("front-end")
+                    .replicas(1)
+                    .build()
+                    .execute();
+end
+
+rule "scale-front-end-down"
+    when
+        m : Metric(
+            queryTag == "front-end-latency",
+            latency: value
+        );
+        eval(latency < 20 &&
+             cronChecker.checkPatternForSession("* */3 * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                .kubernetesService(kubernetesService)
+                .namespace("sock-shop")
+                .resourceType("Deployment")
+                .resourceName("front-end")
+                .replicas(-1)
+                .build()
+                .execute();
+end
+
+rule "scale-user-up"
+    when
+        m : Metric(
+            queryTag == "user-latency",
+            latency: value
+        );
+        eval(latency > 10 &&
+             cronChecker.checkPatternForSession("* */2 * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                    .kubernetesService(kubernetesService)
+                    .namespace("sock-shop")
+                    .resourceType("Deployment")
+                    .resourceName("user")
+                    .replicas(1)
+                    .build()
+                    .execute();
+end
+
+rule "scale-user-down"
+    when
+        latency : Metric(
+            queryTag == "user-latency",
+            v: value
+        );
+        eval(v < 2 &&
+             cronChecker.checkPatternForSession("* */2 * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                    .kubernetesService(kubernetesService)
+                    .namespace("sock-shop")
+                    .resourceType("Deployment")
+                    .resourceName("user")
+                    .replicas(-1)
+                    .build()
+                    .execute();
+end
