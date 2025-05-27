@@ -1,0 +1,8 @@
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "type": "ENVIRONMENT_ENTITY",
+    "definition": "{\n  \"apiVersion\": \"kubernetes.crossplane.io/v1alpha2\",\n  \"kind\": \"Object\",\n  \"metadata\": {\n    \"name\": \"01-carts-dep\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"manifest\": {\n        \"apiVersion\": \"apps/v1\",\n        \"kind\": \"Deployment\",\n        \"metadata\": {\n          \"name\": \"carts\",\n          \"namespace\": \"sock-shop\"\n        },\n        \"spec\": {\n          \"replicas\": 1,\n          \"selector\": {\n            \"matchLabels\": {\n              \"name\": \"carts\"\n            }\n          },\n          \"template\": {\n            \"metadata\": {\n              \"labels\": {\n                \"name\": \"carts\"\n              }\n            },\n            \"spec\": {\n              \"containers\": [\n                {\n                  \"name\": \"carts\",\n                  \"image\": \"weaveworksdemos/carts:0.4.8\",\n                  \"ports\": [\n                    {\n                      \"containerPort\": 80\n                    }\n                  ],\n                  \"env\": [\n                    {\n                      \"name\": \"JAVA_OPTS\",\n                      \"value\": \"-Xms64m -Xmx512m\"\n                    },\n                    {\n                      \"name\": \"CARTS_DSN\",\n                      \"value\": \"carts-db.sock-shop:27017\"\n                    }\n                  ]\n                }\n              ]\n            }\n          }\n        }\n      }\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-kubernetes\"\n    }\n  }\n}"
+  }
+}

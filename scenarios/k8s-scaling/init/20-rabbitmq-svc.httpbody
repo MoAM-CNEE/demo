@@ -1,0 +1,8 @@
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "type": "ENVIRONMENT_ENTITY",
+    "definition": "{\n  \"apiVersion\": \"kubernetes.crossplane.io/v1alpha2\",\n  \"kind\": \"Object\",\n  \"metadata\": {\n    \"name\": \"20-rabbitmq-svc\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"manifest\": {\n        \"apiVersion\": \"v1\",\n        \"kind\": \"Service\",\n        \"metadata\": {\n          \"name\": \"rabbitmq\",\n          \"annotations\": {\n            \"prometheus.io/scrape\": \"true\",\n            \"prometheus.io/port\": \"9090\"\n          },\n          \"labels\": {\n            \"name\": \"rabbitmq\"\n          },\n          \"namespace\": \"sock-shop\"\n        },\n        \"spec\": {\n          \"ports\": [\n            {\n              \"port\": 5672,\n              \"name\": \"rabbitmq\",\n              \"targetPort\": 5672\n            },\n            {\n              \"port\": 9090,\n              \"name\": \"exporter\",\n              \"targetPort\": \"exporter\",\n              \"protocol\": \"TCP\"\n            }\n          ],\n          \"selector\": {\n            \"name\": \"rabbitmq\"\n          }\n        }\n      }\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-kubernetes\"\n    }\n  }\n}"
+  }
+}

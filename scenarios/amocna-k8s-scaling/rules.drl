@@ -13,7 +13,7 @@ rule "scale-front-end-up"
             latency: value
         );
         eval(latency > 60 &&
-             cronChecker.checkPatternForSession("* */3 * ? * * *"))
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
@@ -33,7 +33,7 @@ rule "scale-front-end-down"
             latency: value
         );
         eval(latency < 20 &&
-             cronChecker.checkPatternForSession("* */3 * ? * * *"))
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
@@ -53,7 +53,7 @@ rule "scale-user-up"
             latency: value
         );
         eval(latency > 10 &&
-             cronChecker.checkPatternForSession("* */2 * ? * * *"))
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
@@ -73,7 +73,7 @@ rule "scale-user-down"
             v: value
         );
         eval(v < 2 &&
-             cronChecker.checkPatternForSession("* */2 * ? * * *"))
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
