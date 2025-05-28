@@ -1,0 +1,47 @@
+import io.github.hephaestusmetrics.model.metrics.Metric;
+import org.k8loud.executor.actions.kubernetes.HorizontalScalingAction
+
+global org.k8loud.executor.drools.UsableServices usableServices;
+global org.k8loud.executor.drools.CronChecker cronChecker;
+
+dialect "mvel"
+
+rule "scale-front-end-up"
+    when
+        m : Metric(
+            queryTag == "front-end-latency",
+            latency: value
+        );
+        eval(latency > 60 &&
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                    .kubernetesService(kubernetesService)
+                    .namespace("sock-shop")
+                    .resourceType("Deployment")
+                    .resourceName("front-end")
+                    .replicas(1)
+                    .build()
+                    .execute();
+end
+
+rule "scale-front-end-down"
+    when
+        m : Metric(
+            queryTag == "front-end-latency",
+            latency: value
+        );
+        eval(latency < 20 &&
+             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
+    then
+        kubernetesService = usableServices.getKubernetesService();
+        HorizontalScalingAction.builder()
+                .kubernetesService(kubernetesService)
+                .namespace("sock-shop")
+                .resourceType("Deployment")
+                .resourceName("front-end")
+                .replicas(-1)
+                .build()
+                .execute();
+end
