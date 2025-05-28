@@ -21,38 +21,53 @@ SCENARIO_DIR = $(SCENARIOS_DIR)/$(SCENARIO_NAME)
 
 CONFIG_MAP_FILENAME = cm.yaml
 RULES_FILENAME = rules.drl
+INIT_FILENAME = init.sh
 RUN_FILENAME = run.sh
 TEAR_DOWN_FILENAME = tear_down.sh
 
 TARGET_CONFIG_MAP_PATH = $(TARGET_DIR)/$(CONFIG_MAP_FILENAME)
 TARGET_RULES_PATH = $(TARGET_DIR)/$(RULES_FILENAME)
 
+NPD = --no-print-directory
+
 # targets that aren't annotated with ## are not supposed to be run on their own
 
-help: ## show Makefile contents
+help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-run: ## run scenario <SCENARIO_NAME>
-	@echo "Running scenario $(SCENARIO_NAME)"
-	make upload-rules
-	$(SCENARIO_DIR)/$(RUN_FILENAME)
-	make tear-down
+run: ## make run SCENARIO_NAME=sample | all stages of the scenario
+	@make $(NPD) log-time MSG="make run $(SCENARIO_NAME)"
+	@make $(NPD) upload-rules
+	@make $(NPD) init
+	@make $(NPD) actual-run
+	@make $(NPD) tear-down
 
-upload-rules: ## upload rules of <SCENARIO_NAME>
+upload-rules: ## make upload-rules SCENARIO_NAME=sample
+	@make $(NPD) log-time MSG="make upload rules"
 	@mkdir -p target
 	@echo "Creating a ConfigMap file: $(TARGET_CONFIG_MAP_PATH)"
 	@echo "$$CONFIG_MAP_HEADER" > $(TARGET_CONFIG_MAP_PATH)
 	cp $(SCENARIO_DIR)/$(RULES_FILENAME) $(TARGET_RULES_PATH)
 	sed -i 's/^/    /' $(TARGET_RULES_PATH) # assuming tab = 4 spaces
 	cat $(TARGET_RULES_PATH) >> $(TARGET_CONFIG_MAP_PATH)
-	@echo "Uploading rules"
 	kubectl replace -f $(TARGET_CONFIG_MAP_PATH)
 
-tear-down: ## run tear_down script of scenario <SCENARIO_NAME>
-	@echo "Running tear_down script of scenario $(SCENARIO_NAME)"
+init: ## make init SCENARIO_NAME=sample
+	@make $(NPD) log-time MSG="make init"
+	$(SCENARIO_DIR)/$(INIT_FILENAME)
+
+actual-run: ## make actual-run SCENARIO_NAME=sample | only 'run' script
+	@make $(NPD) log-time MSG="make actual-run"
+	$(SCENARIO_DIR)/$(RUN_FILENAME)
+
+tear-down: ## make tear-down SCENARIO_NAME=sample
+	@make $(NPD) log-time MSG="make tear-down"
 	$(SCENARIO_DIR)/$(TEAR_DOWN_FILENAME)
 
 crossplane-wrap-kubernetes: ## wrap manifests with Kubernetes provider for Crossplane
 	python3 scripts/crossplane_wrap_kubernetes.py $(DIR) -pc $(PROVIDER_CONFIG)
+
+log-time:
+	@echo "$$(date +'%Y-%m-%d %T') $(MSG)"
 
 .DEFAULT_GOAL := help
