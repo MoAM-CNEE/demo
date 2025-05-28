@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 8,
-  "iteration": 1748438957417,
+  "iteration": 1748460834686,
   "links": [],
   "panels": [
     {
@@ -42,141 +42,6 @@
       "type": "row"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 12,
-        "w": 11,
-        "x": 0,
-        "y": 1
-      },
-      "hiddenSeries": false,
-      "id": 22,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
-        }
-      },
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:795",
-          "alias": "magnitude",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "(\n  sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n  /\n  sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n) > 0.06 or vector(0)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "value",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum_over_time((\n  (\n    (\n      sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n      /\n      sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n    ) > 0.06\n  ) or vector(0)\n)[30m:])",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "duration",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum_over_time(\n  (\n    (\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      ) - 0.06\n    )\n    * on() (\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      ) > 0.06\n    )\n    or vector(0)\n  )[30m:]\n)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "magnitude",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "max_over_time((\n  (\n    (\n      sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n      /\n      sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n    ) > 0.06\n  ) or vector(0)\n)[30m:])\n",
-          "format": "time_series",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "max",
-          "refId": "D"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$deploy_name overutilization",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:36",
-          "format": "none",
-          "label": "latency [s]",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:37",
-          "format": "none",
-          "label": "latency * duration [s²]",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "aliasColors": {
         "replicas": "semi-dark-purple"
       },
@@ -193,7 +58,7 @@
       "gridPos": {
         "h": 8,
         "w": 10,
-        "x": 14,
+        "x": 0,
         "y": 1
       },
       "hiddenSeries": false,
@@ -300,7 +165,7 @@
       "gridPos": {
         "h": 8,
         "w": 10,
-        "x": 14,
+        "x": 0,
         "y": 9
       },
       "hiddenSeries": false,
@@ -422,144 +287,9 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 12,
-        "w": 11,
-        "x": 0,
-        "y": 13
-      },
-      "hiddenSeries": false,
-      "id": 24,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
-        }
-      },
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:795",
-          "alias": "magnitude",
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum_over_time(\n  (\n    (\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      ) < 0.02\n    ) or vector(0)\n  )[30m:]\n)\n",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "value",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum_over_time(\n  (\n    (\n      0.02 -\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      )\n    )\n    * on() (\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      ) < 0.02\n    )\n    or vector(0)\n  )[30m:]\n)\n",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "duration",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "(\n  (\n    sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n    /\n    sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n  ) < 0.02\n) or vector(0)\n",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "magnitude",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "max_over_time(\n  (\n    (\n      (\n        sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m]))\n        /\n        sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))\n      ) < 0.02\n    ) or vector(0)\n  )[30m:]\n)\n",
-          "format": "time_series",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "max",
-          "refId": "D"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$deploy_name underutilization",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:36",
-          "format": "none",
-          "label": "latency [s]",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:37",
-          "format": "none",
-          "label": "latency * duration [s²]",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
         "h": 8,
         "w": 10,
-        "x": 14,
+        "x": 0,
         "y": 17
       },
       "hiddenSeries": false,
@@ -723,11 +453,7 @@
       },
       {
         "allValue": null,
-        "current": {
-          "selected": false,
-          "text": "",
-          "value": ""
-        },
+        "current": {},
         "datasource": null,
         "definition": "",
         "description": null,
@@ -752,12 +478,12 @@
     ]
   },
   "time": {
-    "from": "now-1h",
-    "to": "now"
+    "from": "2025-05-28T14:26:36.000Z",
+    "to": "2025-05-28T14:56:36.000Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Scale Kubernetes deployments\"",
   "uid": "egxb7pDSl",
-  "version": 10
+  "version": 15
 }
