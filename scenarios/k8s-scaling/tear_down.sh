@@ -11,8 +11,7 @@ curl -X POST http://localhost:31420/execute \
     "collectionName": "moam.statemanager",
     "actionName": "DeleteEntityAction",
     "params": {
-      "type": "ENVIRONMENT_ENTITY",
-      "filterBy": "select * from environment_entity"
+      "query": "select * from entity"
     }
   }'
 echo ""

@@ -1,5 +1,4 @@
 import org.k8loud.executor.actions.moam.statemanager.CreateEntityAction
-import org.k8loud.executor.actions.moam.statemanager.EntityType
 import org.k8loud.executor.actions.moam.statemanager.UpdateEntityAction
 import org.k8loud.executor.actions.moam.statemanager.DeleteEntityAction
 
@@ -46,7 +45,6 @@ rule "create-entity"
                  "  }\n" +
                  "}";
     CreateEntityAction.builder()
-        .type(EntityType.ENVIRONMENT_ENTITY)
         .definition(definition)
         .stateManagerService(stateManagerService)
         .build()
@@ -59,8 +57,7 @@ rule "update-entity"
     then
     stateManagerService = usableServices.getStateManagerService();
     UpdateEntityAction.builder()
-        .type(EntityType.ENVIRONMENT_ENTITY)
-        .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
+        .query("select * from entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
         .lambdas("{\".spec.forProvider.manifest.metadata.name\": \". + \\\"-updated\\\"\"}")
         .stateManagerService(stateManagerService)
         .build()
@@ -73,8 +70,7 @@ rule "delete-entity"
     then
     stateManagerService = usableServices.getStateManagerService();
     DeleteEntityAction.builder()
-        .type(EntityType.ENVIRONMENT_ENTITY)
-        .filterBy("select * from environment_entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
+        .query("select * from entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = 'drools-test'")
         .stateManagerService(stateManagerService)
         .build()
         .execute();
