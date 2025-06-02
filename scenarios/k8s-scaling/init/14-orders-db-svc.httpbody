@@ -2,7 +2,6 @@
   "collectionName": "moam.statemanager",
   "actionName": "CreateEntityAction",
   "params": {
-    "type": "ENVIRONMENT_ENTITY",
     "definition": "{\n  \"apiVersion\": \"kubernetes.crossplane.io/v1alpha2\",\n  \"kind\": \"Object\",\n  \"metadata\": {\n    \"name\": \"14-orders-db-svc\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"manifest\": {\n        \"apiVersion\": \"v1\",\n        \"kind\": \"Service\",\n        \"metadata\": {\n          \"name\": \"orders-db\",\n          \"labels\": {\n            \"name\": \"orders-db\"\n          },\n          \"namespace\": \"sock-shop\"\n        },\n        \"spec\": {\n          \"ports\": [\n            {\n              \"port\": 27017,\n              \"targetPort\": 27017\n            }\n          ],\n          \"selector\": {\n            \"name\": \"orders-db\"\n          }\n        }\n      }\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-kubernetes\"\n    }\n  }\n}"
   }
 }
