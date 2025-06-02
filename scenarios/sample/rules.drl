@@ -1,6 +1,11 @@
 import org.k8loud.executor.actions.moam.statemanager.CreateEntityAction
 import org.k8loud.executor.actions.moam.statemanager.UpdateEntityAction
 import org.k8loud.executor.actions.moam.statemanager.DeleteEntityAction
+import org.k8loud.executor.actions.moam.statemanager.ReadEntityAction
+import com.fasterxml.jackson.databind.JsonNode
+import java.util.List
+import org.k8loud.executor.model.ExecutionExitCode
+import org.k8loud.executor.moam.statemanager.dto.EntityDTO
 
 global org.k8loud.executor.drools.UsableServices usableServices;
 global org.k8loud.executor.drools.CronChecker cronChecker;
@@ -74,4 +79,27 @@ rule "delete-entity"
         .stateManagerService(stateManagerService)
         .build()
         .execute();
+end
+
+rule "read-entity"
+    when
+        eval(false && cronChecker.checkPatternForSession("0/10 * * * * ? *"))
+    then
+    stateManagerService = usableServices.getStateManagerService();
+    readEntityActionExecutionRS = ReadEntityAction.builder()
+        .query("select * from entity where definition->'$.metadata.name' = 'drools-test'")
+        .stateManagerService(stateManagerService)
+        .build()
+        .execute();
+    if (readEntityActionExecutionRS.getExitCode() == ExecutionExitCode.OK) {
+        entities = (List) readEntityActionExecutionRS.getAdditionalData().get("entities");
+        entityIdx = 0;
+        while (entityIdx < entities.size()) {
+            entity = (EntityDTO) entities.get(entityIdx);
+            definition = (JsonNode) entity.getDefinition();
+            System.out.printf("[%d] Entity with id %d has metadata.name = %s%n", entityIdx, (int) entity.getId(),
+                definition.at("/metadata/name").asText());
+            entityIdx++;
+        }
+    }
 end
