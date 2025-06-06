@@ -1,0 +1,15 @@
+import io.github.hephaestusmetrics.model.metrics.Metric;
+import org.k8loud.executor.actions.kubernetes.HorizontalScalingAction
+import org.k8loud.executor.actions.moam.statemanager.UpdateEntityAction
+
+global org.k8loud.executor.drools.UsableServices usableServices;
+global org.k8loud.executor.drools.CronChecker cronChecker;
+
+dialect "mvel"
+
+rule "periodic-stress-test"
+    when
+        eval(false)
+    then
+        stateManagerService = usableServices.getStateManagerService();
+end

@@ -1,0 +1,8 @@
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "definition": "{\n  \"apiVersion\": \"compute.openstack.crossplane.io/v1alpha1\",\n  \"kind\": \"FlavorV2\",\n  \"metadata\": {\n    \"name\": \"02-c1-nano\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"name\": \"c1.nano\",\n      \"ram\": 512,\n      \"disk\": 5,\n      \"vcpus\": 1,\n      \"isPublic\": true\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-openstack\"\n    }\n  }\n}",
+    "triggerMirrorManager": false
+  }
+}

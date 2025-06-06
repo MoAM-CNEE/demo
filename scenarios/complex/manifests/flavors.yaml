@@ -1,0 +1,69 @@
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: FlavorV2
+metadata:
+  name: 00-h1-smedium
+spec:
+  forProvider:
+    name: h1.smedium
+    ram: 7168
+    disk: 25
+    vcpus: 2
+    isPublic: false
+  providerConfigRef:
+    name: provider-config-openstack
+---
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: FlavorV2
+metadata:
+  name: 01-h2-medium
+spec:
+  forProvider:
+    name: h2.medium
+    ram: 14336
+    disk: 30
+    vcpus: 4
+    isPublic: false
+  providerConfigRef:
+    name: provider-config-openstack
+---
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: FlavorV2
+metadata:
+  name: 02-c1-nano
+spec:
+  forProvider:
+    name: c1.nano
+    ram: 512
+    disk: 5
+    vcpus: 1
+    isPublic: true
+  providerConfigRef:
+    name: provider-config-openstack
+---
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: FlavorV2
+metadata:
+  name: 03-h2d-slarge
+spec:
+  forProvider:
+    name: h2d.slarge
+    ram: 28672
+    disk: 100
+    vcpus: 8
+    isPublic: false
+  providerConfigRef:
+    name: provider-config-openstack
+---
+apiVersion: compute.openstack.crossplane.io/v1alpha1
+kind: FlavorV2
+metadata:
+  name: 04-c1-small
+spec:
+  forProvider:
+    name: c1.small
+    ram: 4096
+    disk: 25
+    vcpus: 2
+    isPublic: true
+  providerConfigRef:
+    name: provider-config-openstack

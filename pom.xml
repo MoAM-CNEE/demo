@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.moamcnee</groupId>
             <artifactId>themis-executor</artifactId>
-            <version>0.0.0.4</version>
+            <version>0.0.0.5</version>
         </dependency>
     </dependencies>
 </project>
