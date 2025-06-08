@@ -1,6 +1,12 @@
 import io.github.hephaestusmetrics.model.metrics.Metric;
 import org.k8loud.executor.actions.kubernetes.HorizontalScalingAction
 import org.k8loud.executor.actions.moam.statemanager.UpdateEntityAction
+import org.k8loud.executor.actions.moam.statemanager.CreateEntityAction
+import org.k8loud.executor.actions.moam.statemanager.ReadEntityAction
+import java.util.List
+import org.k8loud.executor.model.ExecutionExitCode
+import org.k8loud.executor.moam.statemanager.dto.EntityDTO
+import com.fasterxml.jackson.databind.JsonNode
 
 global org.k8loud.executor.drools.UsableServices usableServices;
 global org.k8loud.executor.drools.CronChecker cronChecker;
@@ -8,8 +14,59 @@ global org.k8loud.executor.drools.CronChecker cronChecker;
 dialect "mvel"
 
 rule "periodic-stress-test"
-    when
-        eval(false)
-    then
-        stateManagerService = usableServices.getStateManagerService();
+when
+    eval(cronChecker.checkPatternForSession("0 0/10 * * * ? *"))
+then
+    stateManagerService = usableServices.getStateManagerService();
+    getFlavorsExecutionRS = ReadEntityAction.builder()
+        .query("select * from entity where kind = 'FlavorV2'")
+        .stateManagerService(stateManagerService)
+        .build()
+        .execute();
+
+    if (getFlavorsExecutionRS.getExitCode() == ExecutionExitCode.OK) {
+        flavors = (List) getFlavorsExecutionRS.getAdditionalData().get("entities");
+        flavorIdx = 0;
+        while (flavorIdx < flavors.size()) {
+            flavor = (EntityDTO) flavors.get(flavorIdx);
+            flavorDefinition = (JsonNode) flavor.getDefinition();
+            flavorName = flavorDefinition.at("/spec/forProvider/name").asText();
+            System.out.printf("[%d] Flavor '%s'%n", flavorIdx, flavorName);
+
+            instanceNameUniquePart = flavorName.replace(".", "");
+            instanceDefinition = "{\n" +
+                    "  \"apiVersion\": \"compute.openstack.crossplane.io/v1alpha1\",\n" +
+                    "  \"kind\": \"InstanceV2\",\n" +
+                    "  \"metadata\": {\n" +
+                    "    \"name\": \"stress-test-" + instanceNameUniquePart + "\"\n" +
+                    "  },\n" +
+                    "  \"spec\": {\n" +
+                    "    \"forProvider\": {\n" +
+                    "      \"name\": \"stress-test-" + instanceNameUniquePart + "\",\n" +
+                    "      \"flavorName\": \"" + flavorName + "\",\n" +
+                    "      \"imageName\": \"Ubuntu-Server-24.04-20250605\",\n" +
+                    "      \"keyPair\": \"default\",\n" +
+                    "      \"region\": \"RegionOne\",\n" +
+                    "      \"network\": [\n" +
+                    "        {\n" +
+                    "          \"name\": \"ii-executor-network\",\n" +
+                    "          \"accessNetwork\": true\n" +
+                    "        }\n" +
+                    "      ]\n" +
+                    "    },\n" +
+                    "    \"providerConfigRef\": {\n" +
+                    "      \"name\": \"provider-config-openstack\"\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}";
+            System.out.printf("%s%n", instanceDefinition);
+            CreateEntityAction.builder()
+                .definition(instanceDefinition)
+                .stateManagerService(stateManagerService)
+                .build()
+                .execute();
+
+            flavorIdx++;
+        }
+    }
 end
