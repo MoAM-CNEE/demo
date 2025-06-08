@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 
 kubectl -n themis-executor port-forward svc/themis-executor-svc 31420:8080 &
-sleep 5
+sleep 10
 
 for request_file in init/*.httpbody; do
     echo "sending $request_file"
