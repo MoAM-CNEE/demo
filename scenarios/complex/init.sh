@@ -11,6 +11,3 @@ for request_file in init/*.httpbody; do
     curl -X POST -H "Content-Type: application/json" -d "$request_content" http://localhost:31420/execute
     echo ""
 done
-
-echo "wait for SockShop to start"
-sleep 180

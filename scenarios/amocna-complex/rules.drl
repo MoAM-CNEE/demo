@@ -1,0 +1,62 @@
+import io.github.hephaestusmetrics.model.metrics.Metric;
+import org.k8loud.executor.model.ExecutionExitCode
+import org.k8loud.executor.actions.openstack.GetFlavorsAction
+import org.openstack4j.model.compute.Flavor
+import org.k8loud.executor.actions.openstack.AddInstanceAction
+import java.util.List
+import java.util.Set
+
+global org.k8loud.executor.drools.UsableServices usableServices;
+global org.k8loud.executor.drools.CronChecker cronChecker;
+
+dialect "mvel"
+
+rule "periodic-stress-test"
+    when
+        eval(cronChecker.checkPatternForSession("0 0/10 * * * ? *"))
+    then
+        System.out.println("Processing 'periodic-stress-test'...");
+
+        openstackService = usableServices.getOpenstackService();
+        getFlavorsExecutionRS = GetFlavorsAction.builder()
+            .region("RegionOne")
+            .openstackService(openstackService)
+            .build()
+            .execute();
+
+        if (getFlavorsExecutionRS.getExitCode() == ExecutionExitCode.OK) {
+            flavors = (List) getFlavorsExecutionRS.getAdditionalData().get("flavors");
+            flavorIdx = 0;
+            while (flavorIdx < flavors.size()) {
+                flavor = (Flavor) flavors.get(flavorIdx);
+                flavorName = flavor.getName();
+                System.out.printf("[%d] Flavor '%s'%n", flavorIdx, flavorName);
+
+                instanceNameUniquePart = flavorName.replace(".", "");
+                /*
+                * In the current implementation waitActiveSec(0) will cause the action to fail.
+                * The reason is the Openstack library method: ServerServiceImpl::waitForServerStatus,
+                * the server object will not be pulled.
+                * However, the instance will probably successfully create.
+                * This unsafe behavior is permitted not to influence time measurements.
+                * */
+                AddInstanceAction.builder()
+                    .name("stress-test-" + instanceNameUniquePart)
+                    .flavorId(flavor.getId())
+                    .imageId("f3294644-2c5d-45b0-8a86-40e2e77c3f90")
+                    .keypairName("default")
+                    .region("RegionOne")
+                    .networkIds(List.of("82793ea1-5980-49a5-9c38-a5bd9a19b350"))
+                    .securityGroup(null)
+                    .count(1)
+                    .waitActiveSec(0)
+                    .openstackService(usableServices.getOpenstackService())
+                    .build()
+                    .execute();
+
+                flavorIdx++;
+            }
+        }
+
+        System.out.println("...Processed 'periodic-stress-test'");
+end

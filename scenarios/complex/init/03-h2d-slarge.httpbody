@@ -1,0 +1,8 @@
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "definition": "{\n  \"apiVersion\": \"compute.openstack.crossplane.io/v1alpha1\",\n  \"kind\": \"FlavorV2\",\n  \"metadata\": {\n    \"name\": \"03-h2d-slarge\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"name\": \"h2d.slarge\",\n      \"ram\": 28672,\n      \"disk\": 100,\n      \"vcpus\": 8,\n      \"isPublic\": false\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-openstack\"\n    }\n  }\n}",
+    "triggerMirrorManager": false
+  }
+}
