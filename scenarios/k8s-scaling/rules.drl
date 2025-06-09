@@ -16,6 +16,8 @@ rule "scale-front-end-up"
         eval(latency > 60 &&
              cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
+        System.out.println("Processing 'scale-front-end-up'...");
+
         stateManagerService = usableServices.getStateManagerService();
         UpdateEntityAction.builder()
             .query("select * from entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '09-front-end-dep'")
@@ -23,6 +25,8 @@ rule "scale-front-end-up"
             .stateManagerService(stateManagerService)
             .build()
             .execute();
+
+        System.out.println("...Processed 'scale-front-end-up'");
 end
 
 rule "scale-front-end-down"
@@ -34,6 +38,8 @@ rule "scale-front-end-down"
         eval(latency < 20 &&
              cronChecker.checkPatternForSession("0/30 * * ? * * *"))
     then
+        System.out.println("Processing 'scale-front-end-down'...");
+
         stateManagerService = usableServices.getStateManagerService();
         UpdateEntityAction.builder()
             .query("select * from entity where api_version = 'kubernetes.crossplane.io/v1alpha2' and kind = 'Object' and name = '09-front-end-dep'")
@@ -41,4 +47,6 @@ rule "scale-front-end-down"
             .stateManagerService(stateManagerService)
             .build()
             .execute();
+
+        System.out.println("...Processed 'scale-front-end-down'");
 end
