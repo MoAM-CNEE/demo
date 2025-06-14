@@ -8,14 +8,29 @@ dialect "mvel"
 
 rule "scale-front-end-up"
     when
-        m : Metric(
+        latencyMetric : Metric(
             queryTag == "front-end-latency",
             latency: value
-        );
+        )
+        replicasAvailableMetric : Metric(
+            queryTag == "front-end-replicas-available",
+            replicasAvailable: value
+        )
+        replicasUnavailableMetric : Metric(
+            queryTag == "front-end-replicas-unavailable",
+            replicasUnavailable: value
+        )
         eval(latency > 60 &&
-             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
+             cronChecker.checkPatternForSession("0 0/2 * ? * * *"))
     then
         System.out.println("Processing 'scale-front-end-up'...");
+
+        latencyTarget = 60.0;
+        efficiency = 0.8;
+        latencyErrorRatio = (latency - latencyTarget) / latencyTarget;
+
+        newReplicas = (int) Math.max(1, Math.ceil(replicasAvailable * (1 + latencyErrorRatio) / efficiency));
+        deltaReplicas = (int) Math.max(0, newReplicas - replicasAvailable - replicasUnavailable);
 
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
@@ -23,7 +38,7 @@ rule "scale-front-end-up"
                     .namespace("sock-shop")
                     .resourceType("Deployment")
                     .resourceName("front-end")
-                    .replicas(1)
+                    .replicas(deltaReplicas)
                     .build()
                     .execute();
 
@@ -32,14 +47,29 @@ end
 
 rule "scale-front-end-down"
     when
-        m : Metric(
+        latencyMetric : Metric(
             queryTag == "front-end-latency",
             latency: value
-        );
+        )
+        replicasAvailableMetric : Metric(
+            queryTag == "front-end-replicas-available",
+            replicasAvailable: value
+        )
+        replicasUnavailableMetric : Metric(
+            queryTag == "front-end-replicas-unavailable",
+            replicasUnavailable: value
+        )
         eval(latency < 20 &&
-             cronChecker.checkPatternForSession("0/30 * * ? * * *"))
+             cronChecker.checkPatternForSession("0 0/2 * ? * * *"))
     then
         System.out.println("Processing 'scale-front-end-down'...");
+
+        latencyTarget = 20.0;
+        efficiency = 0.8;
+        latencyErrorRatio = (latency - latencyTarget) / latencyTarget;
+
+        newReplicas = (int) Math.max(1, Math.floor(replicasAvailable * (1 + latencyErrorRatio) / efficiency));
+        deltaReplicas = (int) Math.min(0, newReplicas - replicasAvailable - replicasUnavailable);
 
         kubernetesService = usableServices.getKubernetesService();
         HorizontalScalingAction.builder()
@@ -47,7 +77,7 @@ rule "scale-front-end-down"
                 .namespace("sock-shop")
                 .resourceType("Deployment")
                 .resourceName("front-end")
-                .replicas(-1)
+                .replicas(deltaReplicas)
                 .build()
                 .execute();
 
