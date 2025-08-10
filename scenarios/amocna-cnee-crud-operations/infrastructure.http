@@ -1,0 +1,56 @@
+### create vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "openstack",
+  "actionName": "AddInstanceAction",
+  "params": {
+    "region": "RegionOne",
+    "name": "cnee-crud-operations-vm",
+    "count": "1",
+    "imageId": "f3294644-2c5d-45b0-8a86-40e2e77c3f90",
+    "flavorId": "f2559863-ef7d-416c-907e-4ea4043d4831",
+    "networkIds": "82793ea1-5980-49a5-9c38-a5bd9a19b350"
+  }
+}
+
+### read vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "openstack",
+  "actionName": "GetServerNamesAction",
+  "params": {
+    "region": "RegionOne",
+    "namePattern": "cnee-crud-operations-vm.*"
+  }
+}
+
+### update vm (scale to h1.smedium)
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "openstack",
+  "actionName": "VerticalScalingUpAction",
+  "params": {
+    "region": "RegionOne",
+    "serverId": "8da1e7fe-ce39-4189-9a71-278829e77b36",
+    "flavorId": "13a343c9-1fc5-4dae-9a74-203d290d736b"
+  }
+}
+
+### delete vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "openstack",
+  "actionName": "DeleteInstanceAction",
+  "params": {
+    "region": "RegionOne",
+    "serverIds": "8da1e7fe-ce39-4189-9a71-278829e77b36"
+  }
+}
