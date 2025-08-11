@@ -1,0 +1,53 @@
+### create message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "cnapp.message",
+  "actionName": "CreateMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "themis-key",
+    "content": "themis-content"
+  }
+}
+
+### read message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "cnapp.message",
+  "actionName": "GetMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "themis-key"
+  }
+}
+
+### update message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "cnapp.message",
+  "actionName": "UpdateMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "themis-key",
+    "content": "themis-content-updated"
+  }
+}
+
+### delete message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "cnapp.message",
+  "actionName": "DeleteMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "themis-key"
+  }
+}
