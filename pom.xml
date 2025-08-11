@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.moamcnee</groupId>
             <artifactId>themis-executor</artifactId>
-            <version>0.0.0.7-run-cnee-crud-operations-scenario</version>
+            <version>0.0.0.8</version>
         </dependency>
     </dependencies>
 </project>
