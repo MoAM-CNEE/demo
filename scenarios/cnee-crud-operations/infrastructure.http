@@ -1,0 +1,48 @@
+### create vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "definition": "{\n  \"apiVersion\": \"compute.openstack.crossplane.io/v1alpha1\",\n  \"kind\": \"InstanceV2\",\n  \"metadata\": {\n    \"name\": \"cnee-crud-operations-vm\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"name\": \"cnee-crud-operations-vm\",\n      \"flavorName\": \"c1.small\",\n      \"imageName\": \"Ubuntu-Server-24.04-20250605\",\n      \"keyPair\": \"default\",\n      \"region\": \"RegionOne\",\n      \"network\": [\n        {\n          \"name\": \"ii-executor-network\",\n          \"accessNetwork\": true\n        }\n      ]\n    },\n    \"providerConfigRef\": {\n      \"name\": \"provider-config-openstack\"\n    }\n  }\n}"
+  }
+}
+
+### read vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "ReadEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-vm'"
+  }
+}
+
+### update vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "UpdateEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-vm'",
+    "lambdas": "{\".spec.forProvider.flavorName\": \"\\\"h1.smedium\\\"\"}"
+  }
+}
+
+### delete vm
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "DeleteEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-vm'"
+  }
+}

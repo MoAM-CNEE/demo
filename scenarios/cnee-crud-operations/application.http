@@ -1,0 +1,48 @@
+### create message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "CreateEntityAction",
+  "params": {
+    "definition": "{\n  \"apiVersion\": \"core.dummymessageservice.crossplane.io/v1alpha1\",\n  \"kind\": \"Message\",\n  \"metadata\": {\n    \"name\": \"cnee-crud-operations-message\"\n  },\n  \"spec\": {\n    \"forProvider\": {\n      \"key\": \"key\",\n      \"content\": \"content\"\n    },\n    \"providerConfigRef\": {\n      \"name\": \"example\"\n    }\n  }\n}"
+  }
+}
+
+### read message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "ReadEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-message'"
+  }
+}
+
+### update message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "UpdateEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-message'",
+    "lambdas": "{\".spec.forProvider.content\": \". + \\\"-updated\\\"\"}"
+  }
+}
+
+### delete message
+POST localhost:31420/execute
+Content-Type: application/json
+
+{
+  "collectionName": "moam.statemanager",
+  "actionName": "DeleteEntityAction",
+  "params": {
+    "query": "select * from entity where definition->'$.metadata.name' = 'cnee-crud-operations-message'"
+  }
+}
