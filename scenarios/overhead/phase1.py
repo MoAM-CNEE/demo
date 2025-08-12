@@ -1,5 +1,4 @@
 from enum import Enum
-from dataclasses import dataclass
 import requests
 import os
 import time
@@ -7,23 +6,24 @@ import random
 
 
 class ActionType(Enum):
-    CREATE = "create"
-    UPDATE = "update"
-    DELETE = "delete"
+    CREATE = ("create", 3)
+    UPDATE = ("update", 2)
+    DELETE = ("delete", 2)
+
+    def __init__(self, value, weight):
+        self._value_ = value
+        self.weight = weight
 
 
-@dataclass(frozen=True)
-class EntityType:
-    name: str
-    prefix: str
-    weight: int
+class EntityType(Enum):
+    APPLICATION = ("application", "app", 6)
+    CONTAINERIZATION = ("containerization", "ctr", 3)
+    INFRASTRUCTURE = ("infrastructure", "infra", 1)
 
-
-ENTITY_TYPES = [
-    # EntityType("application", "app", 6),
-    EntityType("containerization", "ctr", 3)
-    # EntityType("infrastructure", "infra", 1)
-]
+    def __init__(self, name, prefix, weight):
+        self._value_ = name
+        self.prefix = prefix
+        self.weight = weight
 
 
 def read_file(file_path):
@@ -38,7 +38,7 @@ def apply_substitutions(template, substitutions):
 
 
 def build_create_payload(entity_type: EntityType, entity_name, key, content, template_dir):
-    definition_file = os.path.join(template_dir, f"{entity_type.name}_definition.json")
+    definition_file = os.path.join(template_dir, f"{entity_type.value}_definition.json")
     definition = read_file(definition_file)
     substitutions = {
         "<ENTITY_NAME>": entity_name,
@@ -56,7 +56,7 @@ def build_create_payload(entity_type: EntityType, entity_name, key, content, tem
 
 
 def build_update_payload(entity_type: EntityType, entity_name, template_dir):
-    lambdas_file = os.path.join(template_dir, f"{entity_type.name}_lambdas.json")
+    lambdas_file = os.path.join(template_dir, f"{entity_type.value}_lambdas.json")
     query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
     lambdas = read_file(lambdas_file)
     return {
@@ -97,17 +97,16 @@ def main():
     entity_counter = 1
 
     for i in range(N):
-        actions = [ActionType.CREATE]
-        weights = [4]  # 4/7 for create
-
         if existing_entities:
-            actions.extend([ActionType.UPDATE, ActionType.DELETE])
-            weights.extend([2, 1])
+            possible_actions = list(ActionType)
+        else:
+            possible_actions = [ActionType.CREATE]
 
-        action = random.choices(actions, weights=weights, k=1)[0]
+        action_weights = [a.weight for a in possible_actions]
+        action = random.choices(possible_actions, weights=action_weights, k=1)[0]
 
         if action == ActionType.CREATE:
-            entity_type = random.choices(ENTITY_TYPES, weights=[et.weight for et in ENTITY_TYPES], k=1)[0]
+            entity_type = random.choices(list(EntityType), weights=[et.weight for et in EntityType], k=1)[0]
             entity_name = f"{entity_type.prefix}-{entity_counter}"
             key = f"key-{entity_counter}"
             content = f"content {entity_counter}"
