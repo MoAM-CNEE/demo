@@ -420,9 +420,33 @@
       "targets": [
         {
           "exemplar": true,
+          "expr": "state_manager_openstack_entity_count",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "openstack",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "state_manager_kubernetes_entity_count",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "kubernetes",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "state_manager_message_service_entity_count",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "message-service",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
           "expr": "state_manager_entity_count",
           "interval": "",
-          "legendFormat": "managed entities count",
+          "legendFormat": "total",
           "queryType": "randomWalk",
           "refId": "A"
         }
@@ -431,7 +455,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Managed entities count over time",
+      "title": "Managed entities count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -480,12 +504,12 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 16
+  "version": 17
 }
