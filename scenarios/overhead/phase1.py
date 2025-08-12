@@ -65,8 +65,8 @@ class ActionType(Enum):
 
 def main():
     template_dir = 'templates'
-    definition_file = os.path.join(template_dir, 'application_definition.txt')
-    lambdas_file = os.path.join(template_dir, 'application_lambdas.txt')
+    definition_file = os.path.join(template_dir, 'application_definition.json')
+    lambdas_file = os.path.join(template_dir, 'application_lambdas.json')
     url = 'http://localhost:31420/execute'
 
     N = 15
