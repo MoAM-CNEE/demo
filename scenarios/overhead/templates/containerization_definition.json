@@ -1,0 +1,52 @@
+{
+  "apiVersion": "kubernetes.crossplane.io/v1alpha2",
+  "kind": "Object",
+  "metadata": {
+    "name": "<ENTITY_NAME>"
+  },
+  "spec": {
+    "forProvider": {
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "name": "<ENTITY_NAME>",
+          "namespace": "default",
+          "labels": {
+            "name": "<ENTITY_NAME>"
+          }
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "name": "busybox-container",
+              "image": "busybox:latest",
+              "imagePullPolicy": "IfNotPresent",
+              "command": [
+                "/bin/sh",
+                "-c"
+              ],
+              "args": [
+                "while true; do echo 'imalive'; sleep 3600; done"
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "400m",
+                  "memory": "250Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "providerConfigRef": {
+      "name": "provider-config-kubernetes"
+    }
+  }
+}
