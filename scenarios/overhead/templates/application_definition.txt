@@ -1,0 +1,16 @@
+{
+  "apiVersion": "core.dummymessageservice.crossplane.io/v1alpha1",
+  "kind": "Message",
+  "metadata": {
+    "name": "<ENTITY_NAME>"
+  },
+  "spec": {
+    "forProvider": {
+      "key": "<KEY>",
+      "content": "<CONTENT>"
+    },
+    "providerConfigRef": {
+      "name": "example"
+    }
+  }
+}
