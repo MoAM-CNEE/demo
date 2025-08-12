@@ -1,6 +1,8 @@
+from enum import Enum
 import requests
-import json
 import os
+import time
+import random
 
 def read_file(file_path):
     with open(file_path, 'r') as f:
@@ -19,7 +21,6 @@ def build_create_payload(definition_file, entity_name, key, content):
         "<CONTENT>": content
     }
     definition = apply_substitutions(definition, substitutions)
-
     return {
         "collectionName": "moam.statemanager",
         "actionName": "CreateEntityAction",
@@ -29,9 +30,7 @@ def build_create_payload(definition_file, entity_name, key, content):
     }
 
 def build_delete_payload(entity_name):
-    query_template = "select * from entity where definition->'$.metadata.name' = '<ENTITY_NAME>'"
-    query = query_template.replace("<ENTITY_NAME>", entity_name)
-
+    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
     return {
         "collectionName": "moam.statemanager",
         "actionName": "DeleteEntityAction",
@@ -40,11 +39,9 @@ def build_delete_payload(entity_name):
         }
     }
 
-def build_update_payload(definition_file, entity_name, lambdas_file):
-    query_template = "select * from entity where definition->'$.metadata.name' = '<ENTITY_NAME>'"
-    query = query_template.replace("<ENTITY_NAME>", entity_name)
+def build_update_payload(entity_name, lambdas_file):
+    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
     lambdas = read_file(lambdas_file)
-
     return {
         "collectionName": "moam.statemanager",
         "actionName": "UpdateEntityAction",
@@ -56,33 +53,59 @@ def build_update_payload(definition_file, entity_name, lambdas_file):
 
 def send_post_request(payload, url):
     headers = {'Content-Type': 'application/json'}
-
-    print(payload)
-
+    print(f"Sending payload: '{payload}'")
     response = requests.post(url, headers=headers, json=payload)
-
     print(f"Status Code: {response.status_code}")
-    print(f"Response Text: {response.text}")
+    print(f"Response Text: '{response.text}'")
+
+class ActionType(Enum):
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
 
 def main():
     template_dir = 'templates'
-
     definition_file = os.path.join(template_dir, 'application_definition.txt')
     lambdas_file = os.path.join(template_dir, 'application_lambdas.txt')
-
-    entity_name = "cnee-crud-operations-message"
-    key = "key123"
-    content = "sample content for the message"
     url = 'http://localhost:31420/execute'
 
-    create_payload = build_create_payload(definition_file, entity_name, key, content)
-    send_post_request(create_payload, url)
+    N = 15
+    existing_entities = set()
 
-    delete_payload = build_delete_payload(entity_name)
-    send_post_request(delete_payload, url)
+    entity_counter = 1
 
-    update_payload = build_update_payload(definition_file, entity_name, lambdas_file)
-    send_post_request(update_payload, url)
+    for i in range(N):
+        actions = [ActionType.CREATE]
+        weights = [4]  # 4/7 for create
+
+        if existing_entities:
+            actions.extend([ActionType.UPDATE, ActionType.DELETE])
+            weights.extend([2, 1])
+
+        action = random.choices(actions, weights=weights, k=1)[0]
+
+        if action == ActionType.CREATE:
+            entity_name = f"entity-{entity_counter}"
+            key = f"key-{entity_counter}"
+            content = f"content {entity_counter}"
+            payload = build_create_payload(definition_file, entity_name, key, content)
+            send_post_request(payload, url)
+            existing_entities.add(entity_name)
+            entity_counter += 1
+
+        elif action == ActionType.UPDATE:
+            entity_name = random.choice(list(existing_entities))
+            payload = build_update_payload(entity_name, lambdas_file)
+            send_post_request(payload, url)
+
+        elif action == ActionType.DELETE:
+            entity_name = random.choice(list(existing_entities))
+            payload = build_delete_payload(entity_name)
+            send_post_request(payload, url)
+            existing_entities.remove(entity_name)
+
+        wait_between_actions_s = random.uniform(2, 15)
+        time.sleep(f"Sleeping for {wait_between_actions_s}")
 
 if __name__ == "__main__":
     main()
