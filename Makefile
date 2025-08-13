@@ -69,7 +69,7 @@ tear-down: ## make tear-down SCENARIO_NAME=sample
 	$(SCENARIO_DIR)/$(TEAR_DOWN_FILENAME)
 
 crossplane-wrap-kubernetes: ## wrap manifests with Kubernetes provider for Crossplane
-	python3 scripts/crossplane_wrap_kubernetes.py $(DIR) -pc $(PROVIDER_CONFIG)
+	python3 useful/crossplane_wrap_kubernetes.py $(DIR) -pc $(PROVIDER_CONFIG)
 
 log-time:
 	@echo "$$(date +'%Y-%m-%d %T') $(MSG)"

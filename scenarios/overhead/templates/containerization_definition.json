@@ -32,12 +32,12 @@
               ],
               "resources": {
                 "limits": {
-                  "cpu": "400m",
-                  "memory": "250Mi"
+                  "cpu": "50m",
+                  "memory": "64Mi"
                 },
                 "requests": {
-                  "cpu": "250m",
-                  "memory": "100Mi"
+                  "cpu": "10m",
+                  "memory": "16Mi"
                 }
               }
             }

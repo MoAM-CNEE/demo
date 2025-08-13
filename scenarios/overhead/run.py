@@ -206,7 +206,7 @@ def main():
     phase1(url)
     log_and_sleep(180)
 
-    entity_counter = phase2(url, template_dir, n_infra=1, n_ctr=2, n_app=3,
+    entity_counter = phase2(url, template_dir, n_infra=15, n_ctr=248, n_app=1096,
                             existing_entities=existing_entities,
                             entity_counter=entity_counter)
     log_and_sleep(300)
