@@ -1,3 +1,3 @@
 {
-  ".spec.forProvider.flavorName": "\"h1.small\""
+  ".spec.forProvider.flavorName": "if . == \\\"h1.small\\\" then \\\"h1.smedium\\\" else \\\"h1.small\\\" end"
 }

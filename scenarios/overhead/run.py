@@ -18,7 +18,7 @@ def log_and_sleep(seconds):
 
 class ActionType(Enum):
     CREATE = ("create", 3)
-    UPDATE = ("update", 2)
+    UPDATE = ("update", 5)
     DELETE = ("delete", 2)
 
     def __init__(self, value, weight):

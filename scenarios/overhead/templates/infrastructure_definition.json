@@ -7,7 +7,7 @@
   "spec": {
     "forProvider": {
       "name": "<ENTITY_NAME>",
-      "flavorName": "c1.nano",
+      "flavorName": "c1.small",
       "imageName": "Ubuntu-Server-24.04-20250605",
       "keyPair": "default",
       "region": "RegionOne",
