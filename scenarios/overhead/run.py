@@ -3,6 +3,17 @@ import requests
 import os
 import time
 import random
+from datetime import datetime
+
+
+def log(msg):
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{ts} {msg}")
+
+
+def log_and_sleep(seconds):
+    log(f"Sleeping for {seconds} seconds...")
+    time.sleep(seconds)
 
 
 class ActionType(Enum):
@@ -69,8 +80,11 @@ def build_update_payload(entity_type: EntityType, entity_name, template_dir):
     }
 
 
-def build_delete_payload(entity_name):
-    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
+def build_delete_payload(entity_name=None):
+    if entity_name:
+        query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
+    else:
+        query = "select * from entity"
     return {
         "collectionName": "moam.statemanager",
         "actionName": "DeleteEntityAction",
@@ -82,21 +96,46 @@ def build_delete_payload(entity_name):
 
 def send_post_request(payload, url):
     headers = {'Content-Type': 'application/json'}
-    print(f"Sending payload: {payload}")
+    log(f"Sending payload: {payload}")
     response = requests.post(url, headers=headers, json=payload)
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Text: {response.text}")
+    log(f"Status Code: {response.status_code}")
+    log(f"Response Text: {response.text}")
 
 
-def main():
-    template_dir = 'templates'
-    url = 'http://localhost:31420/execute'
+# ---------------------------
+# PHASES
+# ---------------------------
 
-    N = 10
-    existing_entities = {}  # entity_name -> EntityType
-    entity_counter = 1
+def phase1(url):
+    log("Phase 1 - delete all entities")
+    payload = build_delete_payload()
+    send_post_request(payload, url)
 
-    for i in range(N):
+
+def phase2(url, template_dir, n_infra, n_ctr, n_app, existing_entities, entity_counter):
+    log("Phase 2 - create specified amounts of entities of each type")
+
+    def create_entities(entity_type, count, counter):
+        for _ in range(count):
+            entity_name = f"{entity_type.prefix}-{counter}"
+            key = f"key-{counter}"
+            content = f"content {counter}"
+            payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
+            send_post_request(payload, url)
+            existing_entities[entity_name] = entity_type
+            counter += 1
+        return counter
+
+    entity_counter = create_entities(EntityType.INFRASTRUCTURE, n_infra, entity_counter)
+    entity_counter = create_entities(EntityType.CONTAINERIZATION, n_ctr, entity_counter)
+    entity_counter = create_entities(EntityType.APPLICATION, n_app, entity_counter)
+
+    return entity_counter
+
+
+def phase3(url, template_dir, existing_entities, entity_counter, N=10):
+    log("Phase 3 - random create/update/delete loop")
+    for _ in range(N):
         if existing_entities:
             possible_actions = list(ActionType)
         else:
@@ -128,8 +167,27 @@ def main():
             del existing_entities[entity_name]
 
         wait_between_actions_s = random.uniform(2, 15)
-        print(f"Sleeping for {wait_between_actions_s:.2f} seconds...")
+        log(f"Sleeping for {wait_between_actions_s:.2f} seconds...")
         time.sleep(wait_between_actions_s)
+
+
+def main():
+    template_dir = 'templates'
+    url = 'http://localhost:31420/execute'
+
+    existing_entities = {}
+    entity_counter = 1
+
+    phase1(url)
+    log_and_sleep(180)
+
+    entity_counter = phase2(url, template_dir, n_infra=1, n_ctr=2, n_app=3,
+                            existing_entities=existing_entities,
+                            entity_counter=entity_counter)
+    log_and_sleep(300)
+
+    phase3(url, template_dir, existing_entities, entity_counter, N=10)
+    log_and_sleep(300)
 
 
 if __name__ == "__main__":
