@@ -3,7 +3,7 @@ import requests
 import os
 import time
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def log(msg):
@@ -108,6 +108,7 @@ def send_post_request(payload, url):
 
 def phase1(url):
     log("Phase 1 - delete all entities")
+
     payload = build_delete_payload()
     send_post_request(payload, url)
 
@@ -122,7 +123,10 @@ def phase2(url, template_dir, n_infra, n_ctr, n_app, existing_entities, entity_c
             content = f"content {counter}"
             payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
             send_post_request(payload, url)
-            existing_entities[entity_name] = entity_type
+            existing_entities[entity_name] = {
+                "type": entity_type,
+                "created_at": datetime.now()
+            }
             counter += 1
         return counter
 
@@ -135,7 +139,9 @@ def phase2(url, template_dir, n_infra, n_ctr, n_app, existing_entities, entity_c
 
 def phase3(url, template_dir, existing_entities, entity_counter, N=10):
     log("Phase 3 - random create/update/delete loop")
-    for _ in range(N):
+
+    executed_actions = 0
+    while executed_actions < N:
         if existing_entities:
             possible_actions = list(ActionType)
         else:
@@ -144,6 +150,8 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
         action_weights = [a.weight for a in possible_actions]
         action = random.choices(possible_actions, weights=action_weights, k=1)[0]
 
+        action_performed = False
+
         if action == ActionType.CREATE:
             entity_type = random.choices(list(EntityType), weights=[et.weight for et in EntityType], k=1)[0]
             entity_name = f"{entity_type.prefix}-{entity_counter}"
@@ -151,20 +159,37 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
             content = f"content {entity_counter}"
             payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
             send_post_request(payload, url)
-            existing_entities[entity_name] = entity_type
+            existing_entities[entity_name] = {
+                "type": entity_type,
+                "created_at": datetime.now()
+            }
             entity_counter += 1
+            action_performed = True
 
         elif action == ActionType.UPDATE:
             entity_name = random.choice(list(existing_entities.keys()))
-            entity_type = existing_entities[entity_name]
+            entity_type = existing_entities[entity_name]["type"]
             payload = build_update_payload(entity_type, entity_name, template_dir)
             send_post_request(payload, url)
+            action_performed = True
 
         elif action == ActionType.DELETE:
-            entity_name = random.choice(list(existing_entities.keys()))
-            payload = build_delete_payload(entity_name)
-            send_post_request(payload, url)
-            del existing_entities[entity_name]
+            now = datetime.now()
+            deletable_entities = [
+                name for name, data in existing_entities.items()
+                if now - data["created_at"] >= timedelta(seconds=90)
+            ]
+            if deletable_entities:
+                entity_name = random.choice(deletable_entities)
+                payload = build_delete_payload(entity_name)
+                send_post_request(payload, url)
+                del existing_entities[entity_name]
+                action_performed = True
+            else:
+                log("No entities old enough to delete yet, skipping delete")
+
+        if action_performed:
+            executed_actions += 1
 
         wait_between_actions_s = random.uniform(2, 15)
         log(f"Sleeping for {wait_between_actions_s:.2f} seconds...")
