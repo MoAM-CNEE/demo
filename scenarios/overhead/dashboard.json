@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 11,
+  "id": 13,
   "links": [],
   "panels": [
     {
@@ -60,7 +60,7 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
@@ -91,9 +91,33 @@
           "exemplar": true,
           "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"mirror-layer\",\n    pod=~\"crossplane.*\"\n  }[5m])\n)",
           "interval": "",
-          "legendFormat": "crossplane",
+          "legendFormat": "control-plane",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"mirror-layer\",\n    pod=~\"mirror-manager.*\"\n  }[5m])\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "mirror-manager",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"state-layer\",\n    pod=~\"state-manager.*\"\n  }[5m])\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "state-manager",
+          "refId": "F"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"state-layer\",\n    pod=~\"state-persister.*\"\n  }[5m])\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "state-persister",
+          "refId": "G"
         }
       ],
       "thresholds": [],
@@ -156,6 +180,385 @@
         "w": 9,
         "x": 15,
         "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 7,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:663",
+          "alias": "AMoCNA + MoAM",
+          "color": "#5794F2"
+        },
+        {
+          "$$hashKey": "object:774",
+          "alias": "AMoCNA",
+          "color": "#B877D9"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"hephaestus\"\n  }[5m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"themis-executor\"\n  }[5m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }[5m])\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "AMoCNA",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"mirror-layer\"\n  }[5m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"state-layer\"\n  }[5m])\n) + \nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"hephaestus\"\n  }[5m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"themis-executor\"\n  }[5m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }[5m])\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "AMoCNA + MoAM",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cumulative CPU usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:151",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:152",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-openstack.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "provider-openstack",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-kubernetes.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "provider-kubernetes",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "provider-message-service",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"crossplane.*\"\n  }\n)\n",
+          "interval": "",
+          "legendFormat": "control-plane",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\",\n    pod=~\"state-persister.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "mirror-manager",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\",\n    pod=~\"state-manager.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "state-manager",
+          "refId": "F"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\",\n    pod=~\"state-persister.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "state-persister",
+          "refId": "G"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "RAM usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:151",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:152",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 15,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:663",
+          "alias": "AMoCNA + MoAM",
+          "color": "#5794F2"
+        },
+        {
+          "$$hashKey": "object:774",
+          "alias": "AMoCNA",
+          "color": "#B877D9"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "AMoCNA",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n)\n",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "AMoCNA + MoAM",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Cumulative CPU usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:151",
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:152",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 0,
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 5,
@@ -267,129 +670,8 @@
       "gridPos": {
         "h": 9,
         "w": 9,
-        "x": 0,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 3,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-openstack.*\"\n  }\n)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "provider-openstack",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-kubernetes.*\"\n  }\n)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "provider-kubernetes",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\"\n  }\n)",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "provider-message-service",
-          "refId": "D"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"crossplane.*\"\n  }\n)\n",
-          "interval": "",
-          "legendFormat": "crossplane",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "RAM usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:151",
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:152",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 9,
         "x": 15,
-        "y": 9
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 6,
@@ -504,12 +786,12 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 17
+  "version": 2
 }
