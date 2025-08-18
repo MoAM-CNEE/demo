@@ -141,6 +141,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:151",
+          "decimals": 1,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -257,6 +258,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:151",
+          "decimals": 1,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -285,6 +287,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "prometheus",
+      "decimals": null,
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -402,6 +405,7 @@
       "yaxes": [
         {
           "$$hashKey": "object:151",
+          "decimals": null,
           "format": "decbytes",
           "label": null,
           "logBase": 1,
@@ -794,5 +798,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 7
+  "version": 8
 }
