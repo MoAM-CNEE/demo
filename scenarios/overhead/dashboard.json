@@ -358,7 +358,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\",\n    pod=~\"state-persister.*\"\n  }\n)",
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\",\n    pod=~\"mirror-manager.*\"\n  }\n)",
           "hide": false,
           "interval": "",
           "legendFormat": "mirror-manager",
@@ -794,5 +794,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 5
+  "version": 7
 }
