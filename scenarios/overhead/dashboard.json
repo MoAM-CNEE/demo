@@ -727,6 +727,7 @@
         {
           "exemplar": true,
           "expr": "state_manager_entity_count",
+          "hide": true,
           "interval": "",
           "legendFormat": "total",
           "queryType": "randomWalk",
@@ -793,5 +794,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 2
+  "version": 4
 }
