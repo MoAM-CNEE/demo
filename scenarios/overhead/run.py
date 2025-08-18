@@ -17,9 +17,9 @@ def log_and_sleep(seconds):
 
 
 class ActionType(Enum):
-    CREATE = ("create", 3)
-    UPDATE = ("update", 5)
-    DELETE = ("delete", 2)
+    CREATE = ("create", 1)
+    UPDATE = ("update", 4)
+    DELETE = ("delete", 6)
 
     def __init__(self, value, weight):
         self._value_ = value
@@ -27,7 +27,7 @@ class ActionType(Enum):
 
 
 class EntityType(Enum):
-    APPLICATION = ("application", "app", 6, 1096, 10)
+    APPLICATION = ("application", "app", 6, 362, 10)
     CONTAINERIZATION = ("containerization", "ctr", 3, 248, 45)
     INFRASTRUCTURE = ("infrastructure", "infra", 1, 15, 120)
 
@@ -205,8 +205,9 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
 
         if action_performed:
             executed_actions += 1
+            print(f"Executed {executed_actions} actions")
 
-        wait_between_actions_s = random.uniform(2, 15)
+        wait_between_actions_s = random.uniform(2, 7)
         log(f"Sleeping for {wait_between_actions_s:.2f} seconds...")
         time.sleep(wait_between_actions_s)
 
@@ -224,7 +225,7 @@ def main():
     entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
     log_and_sleep(300)
 
-    phase3(url, template_dir, existing_entities, entity_counter, N=10)
+    phase3(url, template_dir, existing_entities, entity_counter, N=200)
     log_and_sleep(300)
 
 
