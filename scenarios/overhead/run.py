@@ -27,15 +27,16 @@ class ActionType(Enum):
 
 
 class EntityType(Enum):
-    APPLICATION = ("application", "app", 6, 1096)
-    CONTAINERIZATION = ("containerization", "ctr", 3, 248)
-    INFRASTRUCTURE = ("infrastructure", "infra", 1, 15)
+    APPLICATION = ("application", "app", 6, 1096, 10)
+    CONTAINERIZATION = ("containerization", "ctr", 3, 248, 45)
+    INFRASTRUCTURE = ("infrastructure", "infra", 1, 15, 120)
 
-    def __init__(self, name, prefix, weight, max_count):
+    def __init__(self, name, prefix, weight, max_count, cooldown_seconds):
         self._value_ = name
         self.prefix = prefix
         self.weight = weight
         self.max_count = max_count
+        self.cooldown_seconds = cooldown_seconds
 
 
 def read_file(file_path):
@@ -122,7 +123,12 @@ def phase2(url, template_dir, existing_entities, entity_counter):
             content = f"content {counter}"
             payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
             send_post_request(payload, url)
-            existing_entities[entity_name] = {"type": entity_type, "created_at": datetime.now()}
+            now = datetime.now()
+            existing_entities[entity_name] = {
+                "type": entity_type,
+                "created_at": now,
+                "last_action_at": now
+            }
             counter += 1
         return counter
 
@@ -147,6 +153,7 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
         action = random.choices(possible_actions, weights=action_weights, k=1)[0]
 
         action_performed = False
+        now = datetime.now()
 
         if action == ActionType.CREATE:
             entity_type = random.choices(list(EntityType), weights=[et.weight for et in EntityType], k=1)[0]
@@ -159,31 +166,42 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
                 content = f"content {entity_counter}"
                 payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
                 send_post_request(payload, url)
-                existing_entities[entity_name] = {"type": entity_type, "created_at": datetime.now()}
+                now = datetime.now()
+                existing_entities[entity_name] = {
+                    "type": entity_type,
+                    "created_at": now,
+                    "last_action_at": now
+                }
                 entity_counter += 1
                 action_performed = True
 
         elif action == ActionType.UPDATE:
-            entity_name = random.choice(list(existing_entities.keys()))
-            entity_type = existing_entities[entity_name]["type"]
-            payload = build_update_payload(entity_type, entity_name, template_dir)
-            send_post_request(payload, url)
-            action_performed = True
+            updatable_entities = [
+                (name, data) for name, data in existing_entities.items()
+                if now - data["last_action_at"] >= timedelta(seconds=data["type"].cooldown_seconds)
+            ]
+            if updatable_entities:
+                entity_name, entity_data = random.choice(updatable_entities)
+                payload = build_update_payload(entity_data["type"], entity_name, template_dir)
+                send_post_request(payload, url)
+                existing_entities[entity_name]["last_action_at"] = datetime.now()
+                action_performed = True
+            else:
+                log("No entities eligible for update (cooldown not met)")
 
         elif action == ActionType.DELETE:
-            now = datetime.now()
             deletable_entities = [
-                name for name, data in existing_entities.items()
-                if now - data["created_at"] >= timedelta(seconds=90)
+                (name, data) for name, data in existing_entities.items()
+                if now - data["last_action_at"] >= timedelta(seconds=data["type"].cooldown_seconds)
             ]
             if deletable_entities:
-                entity_name = random.choice(deletable_entities)
+                entity_name, _ = random.choice(deletable_entities)
                 payload = build_delete_payload(entity_name)
                 send_post_request(payload, url)
                 del existing_entities[entity_name]
                 action_performed = True
             else:
-                log("No entities old enough to delete yet, skipping delete")
+                log("No entities eligible for deletion (cooldown not met)")
 
         if action_performed:
             executed_actions += 1
