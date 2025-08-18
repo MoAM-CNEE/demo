@@ -503,7 +503,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Cumulative CPU usage",
+      "title": "Cumulative RAM usage",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -794,5 +794,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 4
+  "version": 5
 }
