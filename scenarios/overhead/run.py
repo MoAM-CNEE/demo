@@ -27,14 +27,15 @@ class ActionType(Enum):
 
 
 class EntityType(Enum):
-    APPLICATION = ("application", "app", 6)
-    CONTAINERIZATION = ("containerization", "ctr", 3)
-    INFRASTRUCTURE = ("infrastructure", "infra", 1)
+    APPLICATION = ("application", "app", 6, 1096)
+    CONTAINERIZATION = ("containerization", "ctr", 3, 248)
+    INFRASTRUCTURE = ("infrastructure", "infra", 1, 15)
 
-    def __init__(self, name, prefix, weight):
+    def __init__(self, name, prefix, weight, max_count):
         self._value_ = name
         self.prefix = prefix
         self.weight = weight
+        self.max_count = max_count
 
 
 def read_file(file_path):
@@ -81,10 +82,7 @@ def build_update_payload(entity_type: EntityType, entity_name, template_dir):
 
 
 def build_delete_payload(entity_name=None):
-    if entity_name:
-        query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
-    else:
-        query = "select * from entity"
+    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'" if entity_name else "select * from entity"
     return {
         "collectionName": "moam.statemanager",
         "actionName": "DeleteEntityAction",
@@ -108,39 +106,37 @@ def send_post_request(payload, url):
 
 def phase1(url):
     log("Phase 1 - delete all entities")
-
     payload = build_delete_payload()
     send_post_request(payload, url)
 
 
-def phase2(url, template_dir, n_infra, n_ctr, n_app, existing_entities, entity_counter):
-    log("Phase 2 - create specified amounts of entities of each type")
+def phase2(url, template_dir, existing_entities, entity_counter):
+    log("Phase 2 - create entities up to max count per type")
 
-    def create_entities(entity_type, count, counter):
-        for _ in range(count):
+    def create_entities(entity_type, counter):
+        current_count = sum(1 for e in existing_entities.values() if e["type"] == entity_type)
+        to_create = entity_type.max_count - current_count
+        for _ in range(to_create):
             entity_name = f"{entity_type.prefix}-{counter}"
             key = f"key-{counter}"
             content = f"content {counter}"
             payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
             send_post_request(payload, url)
-            existing_entities[entity_name] = {
-                "type": entity_type,
-                "created_at": datetime.now()
-            }
+            existing_entities[entity_name] = {"type": entity_type, "created_at": datetime.now()}
             counter += 1
         return counter
 
-    entity_counter = create_entities(EntityType.INFRASTRUCTURE, n_infra, entity_counter)
-    entity_counter = create_entities(EntityType.CONTAINERIZATION, n_ctr, entity_counter)
-    entity_counter = create_entities(EntityType.APPLICATION, n_app, entity_counter)
+    entity_counter = create_entities(EntityType.INFRASTRUCTURE, entity_counter)
+    entity_counter = create_entities(EntityType.CONTAINERIZATION, entity_counter)
+    entity_counter = create_entities(EntityType.APPLICATION, entity_counter)
 
     return entity_counter
 
 
 def phase3(url, template_dir, existing_entities, entity_counter, N=10):
     log("Phase 3 - random create/update/delete loop")
-
     executed_actions = 0
+
     while executed_actions < N:
         if existing_entities:
             possible_actions = list(ActionType)
@@ -154,17 +150,18 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
 
         if action == ActionType.CREATE:
             entity_type = random.choices(list(EntityType), weights=[et.weight for et in EntityType], k=1)[0]
-            entity_name = f"{entity_type.prefix}-{entity_counter}"
-            key = f"key-{entity_counter}"
-            content = f"content {entity_counter}"
-            payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
-            send_post_request(payload, url)
-            existing_entities[entity_name] = {
-                "type": entity_type,
-                "created_at": datetime.now()
-            }
-            entity_counter += 1
-            action_performed = True
+            current_count = sum(1 for e in existing_entities.values() if e["type"] == entity_type)
+            if current_count >= entity_type.max_count:
+                log(f"CREATE skipped: {entity_type.value} limit ({entity_type.max_count}) reached")
+            else:
+                entity_name = f"{entity_type.prefix}-{entity_counter}"
+                key = f"key-{entity_counter}"
+                content = f"content {entity_counter}"
+                payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
+                send_post_request(payload, url)
+                existing_entities[entity_name] = {"type": entity_type, "created_at": datetime.now()}
+                entity_counter += 1
+                action_performed = True
 
         elif action == ActionType.UPDATE:
             entity_name = random.choice(list(existing_entities.keys()))
@@ -206,9 +203,7 @@ def main():
     phase1(url)
     log_and_sleep(180)
 
-    entity_counter = phase2(url, template_dir, n_infra=15, n_ctr=248, n_app=1096,
-                            existing_entities=existing_entities,
-                            entity_counter=entity_counter)
+    entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
     log_and_sleep(300)
 
     phase3(url, template_dir, existing_entities, entity_counter, N=10)
