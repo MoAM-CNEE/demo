@@ -46,8 +46,8 @@ upload-rules: ## make upload-rules SCENARIO_NAME=sample
 	@make $(NPD) log-time MSG="make upload rules"
 	@if [ -f "$(SCENARIO_DIR)/$(RULES_FILENAME)" ]; then \
 		mkdir -p target; \
-		@echo "Creating a ConfigMap file: $(TARGET_CONFIG_MAP_PATH)"; \
-		@echo "$$CONFIG_MAP_HEADER" > $(TARGET_CONFIG_MAP_PATH); \
+		echo "Creating a ConfigMap file: $(TARGET_CONFIG_MAP_PATH)"; \
+		echo "$$CONFIG_MAP_HEADER" > $(TARGET_CONFIG_MAP_PATH); \
 		cp $(SCENARIO_DIR)/$(RULES_FILENAME) $(TARGET_RULES_PATH); \
 		sed -i 's/^/    /' $(TARGET_RULES_PATH); \
 		cat $(TARGET_RULES_PATH) >> $(TARGET_CONFIG_MAP_PATH); \
