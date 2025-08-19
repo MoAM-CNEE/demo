@@ -44,13 +44,17 @@ run: ## make run SCENARIO_NAME=sample | all stages of the scenario
 
 upload-rules: ## make upload-rules SCENARIO_NAME=sample
 	@make $(NPD) log-time MSG="make upload rules"
-	@mkdir -p target
-	@echo "Creating a ConfigMap file: $(TARGET_CONFIG_MAP_PATH)"
-	@echo "$$CONFIG_MAP_HEADER" > $(TARGET_CONFIG_MAP_PATH)
-	cp $(SCENARIO_DIR)/$(RULES_FILENAME) $(TARGET_RULES_PATH)
-	sed -i 's/^/    /' $(TARGET_RULES_PATH) # assuming tab = 4 spaces
-	cat $(TARGET_RULES_PATH) >> $(TARGET_CONFIG_MAP_PATH)
-	kubectl replace -f $(TARGET_CONFIG_MAP_PATH)
+	@if [ -f "$(SCENARIO_DIR)/$(RULES_FILENAME)" ]; then \
+		mkdir -p target; \
+		@echo "Creating a ConfigMap file: $(TARGET_CONFIG_MAP_PATH)"; \
+		@echo "$$CONFIG_MAP_HEADER" > $(TARGET_CONFIG_MAP_PATH); \
+		cp $(SCENARIO_DIR)/$(RULES_FILENAME) $(TARGET_RULES_PATH); \
+		sed -i 's/^/    /' $(TARGET_RULES_PATH); \
+		cat $(TARGET_RULES_PATH) >> $(TARGET_CONFIG_MAP_PATH); \
+		kubectl replace -f $(TARGET_CONFIG_MAP_PATH); \
+	else \
+		echo "Warning: $(RULES_FILENAME) not found in $(SCENARIO_DIR). Skipping upload."; \
+	fi
 
 init: ## make init SCENARIO_NAME=sample
 	@make $(NPD) log-time MSG="make init"
@@ -65,7 +69,7 @@ tear-down: ## make tear-down SCENARIO_NAME=sample
 	$(SCENARIO_DIR)/$(TEAR_DOWN_FILENAME)
 
 crossplane-wrap-kubernetes: ## wrap manifests with Kubernetes provider for Crossplane
-	python3 scripts/crossplane_wrap_kubernetes.py $(DIR) -pc $(PROVIDER_CONFIG)
+	python3 useful/crossplane_wrap_kubernetes.py $(DIR) -pc $(PROVIDER_CONFIG)
 
 log-time:
 	@echo "$$(date +'%Y-%m-%d %T') $(MSG)"

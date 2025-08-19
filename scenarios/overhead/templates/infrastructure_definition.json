@@ -1,0 +1,25 @@
+{
+  "apiVersion": "compute.openstack.crossplane.io/v1alpha1",
+  "kind": "InstanceV2",
+  "metadata": {
+    "name": "<ENTITY_NAME>"
+  },
+  "spec": {
+    "forProvider": {
+      "name": "<ENTITY_NAME>",
+      "flavorName": "c1.small",
+      "imageName": "Ubuntu-Server-24.04-20250605",
+      "keyPair": "default",
+      "region": "RegionOne",
+      "network": [
+        {
+          "name": "ii-executor-network",
+          "accessNetwork": true
+        }
+      ]
+    },
+    "providerConfigRef": {
+      "name": "provider-config-openstack"
+    }
+  }
+}
