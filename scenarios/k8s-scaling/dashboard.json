@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 10,
-  "iteration": 1749810475675,
+  "iteration": 1755647914497,
   "links": [],
   "panels": [
     {
@@ -220,7 +220,13 @@
           "value": "front-end"
         }
       },
-      "seriesOverrides": [],
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:3466",
+          "alias": "replicas",
+          "color": "#FF9830"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
@@ -561,13 +567,13 @@
       "seriesOverrides": [
         {
           "$$hashKey": "object:383",
-          "alias": "latency (default)",
+          "alias": "MoAM",
           "color": "#5794F2"
         },
         {
           "$$hashKey": "object:391",
-          "alias": "latency (Themis enabled)",
-          "color": "#73BF69"
+          "alias": "AMoCNA",
+          "color": "#B877D9"
         }
       ],
       "spaceLength": 10,
@@ -579,7 +585,7 @@
           "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "latency (default)",
+          "legendFormat": "AMoCNA",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -588,7 +594,7 @@
           "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m] offset $experiments_time_offset)) \n/\nsum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m] offset $experiments_time_offset))",
           "hide": false,
           "interval": "",
-          "legendFormat": "latency (Themis enabled)",
+          "legendFormat": "MoAM",
           "refId": "B"
         }
       ],
@@ -705,13 +711,13 @@
       "seriesOverrides": [
         {
           "$$hashKey": "object:483",
-          "alias": "QPS (default)",
+          "alias": "MoAM",
           "color": "#5794F2"
         },
         {
           "$$hashKey": "object:491",
-          "alias": "QPS (Themis enabled)",
-          "color": "#73BF69"
+          "alias": "AMoCNA",
+          "color": "#B877D9"
         }
       ],
       "spaceLength": 10,
@@ -722,7 +728,7 @@
           "exemplar": true,
           "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\",route!=\"metrics\"}[1m])) * 100",
           "interval": "",
-          "legendFormat": "QPS (default)",
+          "legendFormat": "AMoCNA",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -731,7 +737,7 @@
           "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\", route!=\"metrics\"}[1m] offset $experiments_time_offset)) * 100",
           "hide": false,
           "interval": "",
-          "legendFormat": "QPS (Themis enabled)",
+          "legendFormat": "MoAM",
           "refId": "B"
         }
       ],
@@ -779,7 +785,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -904,12 +910,12 @@
     ]
   },
   "time": {
-    "from": "2025-06-11T12:27:30.000Z",
-    "to": "2025-06-11T13:07:57.000Z"
+    "from": "now-15m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Scale Kubernetes deployments\"",
   "uid": "egxb7pDSJ",
-  "version": 9
+  "version": 11
 }

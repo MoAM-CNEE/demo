@@ -11,7 +11,7 @@ scale() {
     sleep "$SLEEP_DURATION_S"
 }
 
-for replicas in {1..5}; do
+for replicas in {1..6}; do
     scale "$replicas"
 done
 
