@@ -16,9 +16,364 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 10,
-  "iteration": 1749810475675,
+  "iteration": 1755724688908,
   "links": [],
   "panels": [
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 26,
+      "panels": [
+        {
+          "aliasColors": {
+            "replicas": "semi-dark-purple"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 9,
+            "x": 0,
+            "y": 1
+          },
+          "hiddenSeries": false,
+          "id": 21,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.5",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "kube_deployment_status_replicas{deployment=\"front-end\", namespace=\"sock-shop\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "all",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "kube_deployment_status_replicas_available{deployment=\"front-end\", namespace=\"sock-shop\"}",
+              "interval": "",
+              "legendFormat": "available",
+              "queryType": "randomWalk",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "kube_deployment_status_replicas_unavailable{deployment=\"front-end\", namespace=\"sock-shop\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "unavailable",
+              "refId": "C"
+            },
+            {
+              "exemplar": true,
+              "expr": "kube_deployment_status_replicas_updated{deployment=\"front-end\", namespace=\"sock-shop\"}",
+              "hide": true,
+              "interval": "",
+              "legendFormat": "UPDATED",
+              "refId": "D"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "$deploy_name replicas",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:799",
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:800",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {
+            "mean latency": "blue",
+            "sum(rate(request_duration_seconds_sum{name=\"carts\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"carts\"}[1m]))": "light-blue"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 9,
+            "x": 15,
+            "y": 1
+          },
+          "hiddenSeries": false,
+          "id": 18,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.5",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))",
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "mean latency",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [
+            {
+              "$$hashKey": "object:1182",
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "gt",
+              "value": 0.06,
+              "yaxis": "left"
+            },
+            {
+              "$$hashKey": "object:1188",
+              "colorMode": "critical",
+              "fill": true,
+              "line": true,
+              "op": "lt",
+              "value": 0.02,
+              "yaxis": "left"
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "$deploy_name latency",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:552",
+              "format": "s",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:553",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "prometheus",
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 9,
+            "x": 15,
+            "y": 9
+          },
+          "hiddenSeries": false,
+          "id": 20,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.5",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\",route!=\"metrics\"}[1m])) * 100",
+              "interval": "",
+              "legendFormat": "QPS",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "$deploy_name QPS",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:1005",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:1006",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "Single",
+      "type": "row"
+    },
     {
       "collapsed": false,
       "datasource": null,
@@ -26,7 +381,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 2,
       "panels": [],
@@ -38,7 +393,7 @@
           "value": "front-end"
         }
       },
-      "title": "$deploy_name",
+      "title": "Comparison",
       "type": "row"
     },
     {
@@ -59,137 +414,7 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 1
-      },
-      "hiddenSeries": false,
-      "id": 21,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
-        }
-      },
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "kube_deployment_status_replicas{deployment=\"front-end\", namespace=\"sock-shop\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "all",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "kube_deployment_status_replicas_available{deployment=\"front-end\", namespace=\"sock-shop\"}",
-          "interval": "",
-          "legendFormat": "available",
-          "queryType": "randomWalk",
-          "refId": "A"
-        },
-        {
-          "exemplar": true,
-          "expr": "kube_deployment_status_replicas_unavailable{deployment=\"front-end\", namespace=\"sock-shop\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "unavailable",
-          "refId": "C"
-        },
-        {
-          "exemplar": true,
-          "expr": "kube_deployment_status_replicas_updated{deployment=\"front-end\", namespace=\"sock-shop\"}",
-          "hide": true,
-          "interval": "",
-          "legendFormat": "UPDATED",
-          "refId": "D"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$deploy_name replicas",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:799",
-          "format": "none",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:800",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "replicas": "semi-dark-purple"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 15,
-        "y": 1
+        "y": 2
       },
       "hiddenSeries": false,
       "id": 4,
@@ -213,14 +438,13 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:3466",
+          "alias": "replicas",
+          "color": "#FF9830"
         }
-      },
-      "seriesOverrides": [],
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
@@ -295,239 +519,8 @@
       "gridPos": {
         "h": 8,
         "w": 9,
-        "x": 0,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 18,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
-        }
-      },
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))",
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "mean latency",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [
-        {
-          "$$hashKey": "object:1182",
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "gt",
-          "value": 0.06,
-          "yaxis": "left"
-        },
-        {
-          "$$hashKey": "object:1188",
-          "colorMode": "critical",
-          "fill": true,
-          "line": true,
-          "op": "lt",
-          "value": 0.02,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$deploy_name latency",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:552",
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:553",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 9,
         "x": 15,
-        "y": 9
-      },
-      "hiddenSeries": false,
-      "id": 20,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.5",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "scopedVars": {
-        "deploy_name": {
-          "selected": true,
-          "text": "front-end",
-          "value": "front-end"
-        }
-      },
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\",route!=\"metrics\"}[1m])) * 100",
-          "interval": "",
-          "legendFormat": "QPS",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$deploy_name QPS",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1005",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1006",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "mean latency": "blue",
-        "sum(rate(request_duration_seconds_sum{name=\"carts\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"carts\"}[1m]))": "light-blue"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "prometheus",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 0,
-        "y": 17
+        "y": 2
       },
       "hiddenSeries": false,
       "id": 22,
@@ -561,13 +554,13 @@
       "seriesOverrides": [
         {
           "$$hashKey": "object:383",
-          "alias": "latency (default)",
+          "alias": "MoAM",
           "color": "#5794F2"
         },
         {
           "$$hashKey": "object:391",
-          "alias": "latency (Themis enabled)",
-          "color": "#73BF69"
+          "alias": "AMoCNA",
+          "color": "#B877D9"
         }
       ],
       "spaceLength": 10,
@@ -579,7 +572,7 @@
           "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m])) / sum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m]))",
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "latency (default)",
+          "legendFormat": "AMoCNA",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -588,7 +581,7 @@
           "expr": "sum(rate(request_duration_seconds_sum{name=\"$deploy_name\"}[1m] offset $experiments_time_offset)) \n/\nsum(rate(request_duration_seconds_count{name=\"$deploy_name\"}[1m] offset $experiments_time_offset))",
           "hide": false,
           "interval": "",
-          "legendFormat": "latency (Themis enabled)",
+          "legendFormat": "MoAM",
           "refId": "B"
         }
       ],
@@ -656,6 +649,132 @@
       }
     },
     {
+      "aliasColors": {
+        "replicas": "semi-dark-purple"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 24,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "scopedVars": {
+        "deploy_name": {
+          "selected": true,
+          "text": "front-end",
+          "value": "front-end"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:299",
+          "alias": "AMoCNA",
+          "color": "#8F3BB8"
+        },
+        {
+          "$$hashKey": "object:307",
+          "alias": "MoAM",
+          "color": "#1F60C4"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "kube_deployment_status_replicas_available{deployment=\"front-end\", namespace=\"sock-shop\"}",
+          "interval": "",
+          "legendFormat": "AMoCNA",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "kube_deployment_status_replicas_available{deployment=\"front-end\", namespace=\"sock-shop\"} offset 1h",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "MoAM",
+          "queryType": "randomWalk",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "$deploy_name replicas comparison",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:799",
+          "format": "none",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:800",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -671,7 +790,7 @@
         "h": 8,
         "w": 9,
         "x": 15,
-        "y": 17
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 23,
@@ -705,13 +824,13 @@
       "seriesOverrides": [
         {
           "$$hashKey": "object:483",
-          "alias": "QPS (default)",
+          "alias": "MoAM",
           "color": "#5794F2"
         },
         {
           "$$hashKey": "object:491",
-          "alias": "QPS (Themis enabled)",
-          "color": "#73BF69"
+          "alias": "AMoCNA",
+          "color": "#B877D9"
         }
       ],
       "spaceLength": 10,
@@ -722,7 +841,7 @@
           "exemplar": true,
           "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\",route!=\"metrics\"}[1m])) * 100",
           "interval": "",
-          "legendFormat": "QPS (default)",
+          "legendFormat": "AMoCNA",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -731,7 +850,7 @@
           "expr": "sum(rate(request_duration_seconds_count{name=\"$deploy_name\", route!=\"metrics\"}[1m] offset $experiments_time_offset)) * 100",
           "hide": false,
           "interval": "",
-          "legendFormat": "QPS (Themis enabled)",
+          "legendFormat": "MoAM",
           "refId": "B"
         }
       ],
@@ -779,7 +898,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 27,
   "style": "dark",
   "tags": [],
@@ -882,8 +1001,8 @@
       {
         "current": {
           "selected": false,
-          "text": "3433s",
-          "value": "3433s"
+          "text": "3270s",
+          "value": "3270s"
         },
         "description": null,
         "error": null,
@@ -893,23 +1012,23 @@
         "options": [
           {
             "selected": true,
-            "text": "3433s",
-            "value": "3433s"
+            "text": "3270s",
+            "value": "3270s"
           }
         ],
-        "query": "3433s",
+        "query": "3270s",
         "skipUrlSync": false,
         "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "2025-06-11T12:27:30.000Z",
-    "to": "2025-06-11T13:07:57.000Z"
+    "from": "now-1h",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Scale Kubernetes deployments\"",
   "uid": "egxb7pDSJ",
-  "version": 9
+  "version": 12
 }
