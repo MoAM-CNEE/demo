@@ -3,9 +3,13 @@ import requests
 import os
 import time
 import random
+import json
 from datetime import datetime, timedelta
 
 
+# ---------------------------
+# Logging
+# ---------------------------
 def log(msg):
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{ts} {msg}")
@@ -16,6 +20,9 @@ def log_and_sleep(seconds):
     time.sleep(seconds)
 
 
+# ---------------------------
+# Enums
+# ---------------------------
 class ActionType(Enum):
     CREATE = ("create", 1)
     UPDATE = ("update", 4)
@@ -39,6 +46,9 @@ class EntityType(Enum):
         self.cooldown_seconds = cooldown_seconds
 
 
+# ---------------------------
+# File & Template Utils
+# ---------------------------
 def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read().strip()
@@ -50,65 +60,53 @@ def apply_substitutions(template, substitutions):
     return template
 
 
-def build_create_payload(entity_type: EntityType, entity_name, key, content, template_dir):
-    definition_file = os.path.join(template_dir, f"{entity_type.value}_definition.json")
-    definition = read_file(definition_file)
-    substitutions = {
-        "<ENTITY_NAME>": entity_name,
-        "<KEY>": key,
-        "<CONTENT>": content
-    }
-    definition = apply_substitutions(definition, substitutions)
-    return {
-        "collectionName": "moam.statemanager",
-        "actionName": "CreateEntityAction",
-        "params": {
-            "definition": definition
-        }
-    }
+def load_template(entity_type: EntityType, action: ActionType, template_dir):
+    file_name = f"{entity_type.value}_{action.value}.json"
+    file_path = os.path.join(template_dir, file_name)
+    return read_file(file_path)
 
 
-def build_update_payload(entity_type: EntityType, entity_name, template_dir):
-    lambdas_file = os.path.join(template_dir, f"{entity_type.value}_lambdas.json")
-    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'"
-    lambdas = read_file(lambdas_file)
-    return {
-        "collectionName": "moam.statemanager",
-        "actionName": "UpdateEntityAction",
-        "params": {
-            "query": query,
-            "lambdas": lambdas
-        }
-    }
+def build_payload(entity_type: EntityType, action: ActionType, substitutions, template_dir):
+    template = load_template(entity_type, action, template_dir)
+    payload_str = apply_substitutions(template, substitutions)
+    # Convert JSON string to dict
+    return json.loads(payload_str)
 
 
-def build_delete_payload(entity_name=None):
-    query = f"select * from entity where definition->'$.metadata.name' = '{entity_name}'" if entity_name else "select * from entity"
-    return {
-        "collectionName": "moam.statemanager",
-        "actionName": "DeleteEntityAction",
-        "params": {
-            "query": query
-        }
-    }
-
-
-def send_post_request(payload, url):
+# ---------------------------
+# HTTP Request
+# ---------------------------
+def send_post_request(payload, url, dry_run=False):
     headers = {'Content-Type': 'application/json'}
     log(f"Sending payload: {payload}")
-    response = requests.post(url, headers=headers, json=payload)
-    log(f"Status Code: {response.status_code}")
-    log(f"Response Text: {response.text}")
+    if not dry_run:
+        response = requests.post(url, headers=headers, json=payload)
+        log(f"Status Code: {response.status_code}")
+        log(f"Response Text: {response.text}")
 
 
 # ---------------------------
 # PHASES
 # ---------------------------
+def get_substitutions(entity_name):
+    counter = entity_name.split('-')[1]
+    return {
+        "<ENTITY_NAME>": entity_name,
 
-def phase1(url):
-    log("Phase 1 - delete all entities")
-    payload = build_delete_payload()
-    send_post_request(payload, url)
+        "<KEY>": f"key-{counter}",
+        "<CONTENT>": f"content {counter}",
+
+        "<RESOURCE_NAME>": entity_name,
+        "<LIMITS_CPU>": "50m",
+        "<LIMITS_MEMORY>": "64Mi",
+
+        "<INSTANCE_NAME_PATTERN>": f"^{entity_name}-",
+        "<FLAVOR_ID>": "13a343c9-1fc5-4dae-9a74-203d290d736b"
+    }
+
+
+def phase1():
+    log("Phase 1 - idle run")
 
 
 def phase2(url, template_dir, existing_entities, entity_counter):
@@ -119,23 +117,24 @@ def phase2(url, template_dir, existing_entities, entity_counter):
         to_create = entity_type.max_count - current_count
         for _ in range(to_create):
             entity_name = f"{entity_type.prefix}-{counter}"
-            key = f"key-{counter}"
-            content = f"content {counter}"
-            payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
-            send_post_request(payload, url)
-            now = datetime.now()
-            existing_entities[entity_name] = {
-                "type": entity_type,
-                "created_at": now,
-                "last_action_at": now
-            }
-            counter += 1
+            substitutions = get_substitutions(entity_name)
+            try:
+                payload = build_payload(entity_type, ActionType.CREATE, substitutions, template_dir)
+                send_post_request(payload, url)
+                now = datetime.now()
+                existing_entities[entity_name] = {
+                    "type": entity_type,
+                    "created_at": now,
+                    "last_action_at": now
+                }
+                counter += 1
+            except FileNotFoundError:
+                log(f"No CREATE template found for {entity_type.value}, skipping.")
         return counter
 
     entity_counter = create_entities(EntityType.INFRASTRUCTURE, entity_counter)
     entity_counter = create_entities(EntityType.CONTAINERIZATION, entity_counter)
     entity_counter = create_entities(EntityType.APPLICATION, entity_counter)
-
     return entity_counter
 
 
@@ -145,7 +144,7 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
 
     while executed_actions < N:
         if existing_entities:
-            possible_actions = list(ActionType)
+            possible_actions = [ActionType.CREATE, ActionType.UPDATE, ActionType.DELETE]
         else:
             possible_actions = [ActionType.CREATE]
 
@@ -162,46 +161,40 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
                 log(f"CREATE skipped: {entity_type.value} limit ({entity_type.max_count}) reached")
             else:
                 entity_name = f"{entity_type.prefix}-{entity_counter}"
-                key = f"key-{entity_counter}"
-                content = f"content {entity_counter}"
-                payload = build_create_payload(entity_type, entity_name, key, content, template_dir)
-                send_post_request(payload, url)
-                now = datetime.now()
-                existing_entities[entity_name] = {
-                    "type": entity_type,
-                    "created_at": now,
-                    "last_action_at": now
-                }
-                entity_counter += 1
-                action_performed = True
+                substitutions = get_substitutions(entity_name)
+                try:
+                    payload = build_payload(entity_type, ActionType.CREATE, substitutions, template_dir)
+                    send_post_request(payload, url)
+                    existing_entities[entity_name] = {
+                        "type": entity_type,
+                        "created_at": now,
+                        "last_action_at": now
+                    }
+                    entity_counter += 1
+                    action_performed = True
+                except FileNotFoundError:
+                    log(f"No CREATE template for {entity_type.value}, skipping.")
 
-        elif action == ActionType.UPDATE:
-            updatable_entities = [
+        elif action in [ActionType.UPDATE, ActionType.DELETE]:
+            candidates = [
                 (name, data) for name, data in existing_entities.items()
                 if now - data["last_action_at"] >= timedelta(seconds=data["type"].cooldown_seconds)
             ]
-            if updatable_entities:
-                entity_name, entity_data = random.choice(updatable_entities)
-                payload = build_update_payload(entity_data["type"], entity_name, template_dir)
-                send_post_request(payload, url)
-                existing_entities[entity_name]["last_action_at"] = datetime.now()
-                action_performed = True
+            if candidates:
+                entity_name, entity_data = random.choice(candidates)
+                substitutions = get_substitutions(entity_name)
+                try:
+                    payload = build_payload(entity_data["type"], action, substitutions, template_dir)
+                    send_post_request(payload, url)
+                    if action == ActionType.DELETE:
+                        del existing_entities[entity_name]
+                    else:
+                        existing_entities[entity_name]["last_action_at"] = datetime.now()
+                    action_performed = True
+                except FileNotFoundError:
+                    log(f"No {action.value.upper()} template for {entity_data['type'].value}, skipping.")
             else:
-                log("No entities eligible for update (cooldown not met)")
-
-        elif action == ActionType.DELETE:
-            deletable_entities = [
-                (name, data) for name, data in existing_entities.items()
-                if now - data["last_action_at"] >= timedelta(seconds=data["type"].cooldown_seconds)
-            ]
-            if deletable_entities:
-                entity_name, _ = random.choice(deletable_entities)
-                payload = build_delete_payload(entity_name)
-                send_post_request(payload, url)
-                del existing_entities[entity_name]
-                action_performed = True
-            else:
-                log("No entities eligible for deletion (cooldown not met)")
+                log(f"No entities eligible for {action.value} (cooldown not met)")
 
         if action_performed:
             executed_actions += 1
@@ -212,6 +205,9 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
         time.sleep(wait_between_actions_s)
 
 
+# ---------------------------
+# MAIN
+# ---------------------------
 def main():
     template_dir = 'templates'
     url = 'http://localhost:31420/execute'
@@ -219,14 +215,14 @@ def main():
     existing_entities = {}
     entity_counter = 1
 
-    phase1(url)
-    log_and_sleep(180)
+    # phase1()
+    # log_and_sleep(180)
 
-    entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
-    log_and_sleep(300)
+    # entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
+    # log_and_sleep(300)
 
-    phase3(url, template_dir, existing_entities, entity_counter, N=200)
-    log_and_sleep(300)
+    phase3(url, template_dir, existing_entities, entity_counter, N=20)
+    # log_and_sleep(300)
 
 
 if __name__ == "__main__":

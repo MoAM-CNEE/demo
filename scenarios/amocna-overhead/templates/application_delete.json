@@ -1,0 +1,8 @@
+{
+  "collectionName": "cnapp.message",
+  "actionName": "DeleteMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "<KEY>"
+  }
+}

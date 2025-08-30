@@ -1,0 +1,9 @@
+{
+  "collectionName": "cnapp.message",
+  "actionName": "UpdateMessageAction",
+  "params": {
+    "applicationUrl": "http://dummy-message-service-svc.dummy-message-service.svc.cluster.local:8000",
+    "key": "<KEY>",
+    "content": "<CONTENT>"
+  }
+}

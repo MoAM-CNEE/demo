@@ -1,0 +1,11 @@
+{
+  "collectionName": "kubernetes",
+  "actionName": "ChangeResourcesOfContainerWithinPodAction",
+  "params": {
+    "namespace": "default",
+    "podName": "<RESOURCE_NAME>",
+    "containerName": "busybox-container",
+    "limitsCpu": "<LIMITS_CPU>",
+    "limitsMemory": "<LIMITS_MEMORY>"
+  }
+}

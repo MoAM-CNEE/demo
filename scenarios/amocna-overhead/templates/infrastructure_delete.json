@@ -1,0 +1,8 @@
+{
+  "collectionName": "openstack",
+  "actionName": "DeleteInstanceAction",
+  "params": {
+    "region": "RegionOne",
+    "namePattern": "<INSTANCE_NAME_PATTERN>"
+  }
+}
