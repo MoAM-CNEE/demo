@@ -5,7 +5,7 @@
     "namespace": "default",
     "podName": "<RESOURCE_NAME>",
     "containerName": "busybox-container",
-    "limitsCpu": "<LIMITS_CPU>",
-    "limitsMemory": "<LIMITS_MEMORY>"
+    "limitsCpu": "50m",
+    "limitsMemory": "64Mi"
   }
 }

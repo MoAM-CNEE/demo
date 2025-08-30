@@ -229,14 +229,14 @@ def main():
     existing_entities = {}
     entity_counter = 1
 
-    # phase1()
-    # log_and_sleep(180)
+    phase1()
+    log_and_sleep(180)
 
-    # entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
-    # log_and_sleep(300)
+    entity_counter = phase2(url, template_dir, existing_entities, entity_counter)
+    log_and_sleep(300)
 
-    phase3(url, template_dir, existing_entities, entity_counter, N=20)
-    # log_and_sleep(300)
+    phase3(url, template_dir, existing_entities, entity_counter, N=200)
+    log_and_sleep(300)
 
 
 if __name__ == "__main__":
