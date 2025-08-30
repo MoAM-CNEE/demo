@@ -6,6 +6,9 @@ import random
 from datetime import datetime, timedelta
 
 
+# ---------------------------
+# Logging
+# ---------------------------
 def log(msg):
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"{ts} {msg}")
@@ -16,6 +19,9 @@ def log_and_sleep(seconds):
     time.sleep(seconds)
 
 
+# ---------------------------
+# Enums
+# ---------------------------
 class ActionType(Enum):
     CREATE = ("create", 1)
     UPDATE = ("update", 4)
@@ -39,6 +45,9 @@ class EntityType(Enum):
         self.cooldown_seconds = cooldown_seconds
 
 
+# ---------------------------
+# File & Template Utils
+# ---------------------------
 def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read().strip()
@@ -93,6 +102,9 @@ def build_delete_payload(entity_name=None):
     }
 
 
+# ---------------------------
+# HTTP Request
+# ---------------------------
 def send_post_request(payload, url):
     headers = {'Content-Type': 'application/json'}
     log(f"Sending payload: {payload}")
@@ -104,7 +116,6 @@ def send_post_request(payload, url):
 # ---------------------------
 # PHASES
 # ---------------------------
-
 def phase1(url):
     log("Phase 1 - delete all entities")
     payload = build_delete_payload()
@@ -212,6 +223,9 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
         time.sleep(wait_between_actions_s)
 
 
+# ---------------------------
+# MAIN
+# ---------------------------
 def main():
     template_dir = 'templates'
     url = 'http://localhost:31420/execute'
