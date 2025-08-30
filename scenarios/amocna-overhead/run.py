@@ -98,7 +98,7 @@ def get_substitutions(entity_name):
         "<ENTITY_NAME>": entity_name,
 
         "<KEY>": f"key-{counter}",
-        "<CONTENT>": f"content {counter}",
+        "<CONTENT>": f"content-{counter}",
 
         "<RESOURCE_NAME>": entity_name,
 
