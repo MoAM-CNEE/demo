@@ -60,16 +60,20 @@ def apply_substitutions(template, substitutions):
     return template
 
 
-def load_template(entity_type: EntityType, action: ActionType, template_dir):
-    file_name = f"{entity_type.value}_{action.value}.json"
+def load_template(entity_type: EntityType, action: ActionType, template_dir, update_count=None):
+    if entity_type == EntityType.INFRASTRUCTURE and action == ActionType.UPDATE:
+        index = update_count % 2
+        file_name = f"{entity_type.value}_{action.value}_{index}.json"
+    else:
+        file_name = f"{entity_type.value}_{action.value}.json"
+
     file_path = os.path.join(template_dir, file_name)
     return read_file(file_path)
 
 
-def build_payload(entity_type: EntityType, action: ActionType, substitutions, template_dir):
-    template = load_template(entity_type, action, template_dir)
+def build_payload(entity_type: EntityType, action: ActionType, substitutions, template_dir, update_count=None):
+    template = load_template(entity_type, action, template_dir, update_count)
     payload_str = apply_substitutions(template, substitutions)
-    # Convert JSON string to dict
     return json.loads(payload_str)
 
 
@@ -97,11 +101,8 @@ def get_substitutions(entity_name):
         "<CONTENT>": f"content {counter}",
 
         "<RESOURCE_NAME>": entity_name,
-        "<LIMITS_CPU>": "50m",
-        "<LIMITS_MEMORY>": "64Mi",
 
-        "<INSTANCE_NAME_PATTERN>": f"^{entity_name}-",
-        "<FLAVOR_ID>": "13a343c9-1fc5-4dae-9a74-203d290d736b"
+        "<INSTANCE_NAME_PATTERN>": f"^{entity_name}-"
     }
 
 
@@ -125,7 +126,8 @@ def phase2(url, template_dir, existing_entities, entity_counter):
                 existing_entities[entity_name] = {
                     "type": entity_type,
                     "created_at": now,
-                    "last_action_at": now
+                    "last_action_at": now,
+                    "update_count": 0
                 }
                 counter += 1
             except FileNotFoundError:
@@ -168,7 +170,8 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
                     existing_entities[entity_name] = {
                         "type": entity_type,
                         "created_at": now,
-                        "last_action_at": now
+                        "last_action_at": now,
+                        "update_count": 0
                     }
                     entity_counter += 1
                     action_performed = True
@@ -184,12 +187,23 @@ def phase3(url, template_dir, existing_entities, entity_counter, N=10):
                 entity_name, entity_data = random.choice(candidates)
                 substitutions = get_substitutions(entity_name)
                 try:
-                    payload = build_payload(entity_data["type"], action, substitutions, template_dir)
-                    send_post_request(payload, url)
-                    if action == ActionType.DELETE:
+                    if action == ActionType.UPDATE:
+                        update_count = entity_data.get("update_count", 0)
+                        payload = build_payload(
+                            entity_data["type"],
+                            action,
+                            substitutions,
+                            template_dir,
+                            update_count=update_count
+                        )
+                        send_post_request(payload, url)
+
+                        entity_data["last_action_at"] = datetime.now()
+                        entity_data["update_count"] = update_count + 1
+                    elif action == ActionType.DELETE:
+                        payload = build_payload(entity_data["type"], action, substitutions, template_dir)
+                        send_post_request(payload, url)
                         del existing_entities[entity_name]
-                    else:
-                        existing_entities[entity_name]["last_action_at"] = datetime.now()
                     action_performed = True
                 except FileNotFoundError:
                     log(f"No {action.value.upper()} template for {entity_data['type'].value}, skipping.")

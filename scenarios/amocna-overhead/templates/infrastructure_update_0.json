@@ -1,0 +1,9 @@
+{
+  "collectionName": "openstack",
+  "actionName": "VerticalScalingUpAction",
+  "params": {
+    "region": "RegionOne",
+    "namePattern": "<INSTANCE_NAME_PATTERN>",
+    "flavorId": "13a343c9-1fc5-4dae-9a74-203d290d736b"
+  }
+}
