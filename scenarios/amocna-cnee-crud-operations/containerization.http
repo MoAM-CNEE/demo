@@ -37,7 +37,9 @@ Content-Type: application/json
     "podName": "cnee-crud-operations-pod",
     "containerName": "busybox-container",
     "limitsCpu": "600m",
-    "limitsMemory": "400Mi"
+    "limitsMemory": "400Mi",
+    "requestsCpu": "10m",
+    "requestsMemory": "16Mi"
   }
 }
 

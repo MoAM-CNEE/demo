@@ -56,7 +56,8 @@ def read_file(file_path):
 
 def apply_substitutions(template, substitutions):
     for key, value in substitutions.items():
-        template = template.replace(key, value)
+        if not key.startswith("<<"): # << - post json loads substitution
+            template = template.replace(key, value)
     return template
 
 
@@ -74,7 +75,14 @@ def load_template(entity_type: EntityType, action: ActionType, template_dir, upd
 def build_payload(entity_type: EntityType, action: ActionType, substitutions, template_dir, update_count=None):
     template = load_template(entity_type, action, template_dir, update_count)
     payload_str = apply_substitutions(template, substitutions)
-    return json.loads(payload_str)
+
+    payload = json.loads(payload_str)
+
+    # avoid translation from raw YAML string to JSON while json.loads
+    if 'params' in payload and 'resourceDescription' in payload['params']:
+        payload['params']['resourceDescription'] = substitutions.get('<<RESOURCE_DESCRIPTION>>')
+
+    return payload
 
 
 # ---------------------------
@@ -101,8 +109,9 @@ def get_substitutions(entity_name):
         "<CONTENT>": f"content-{counter}",
 
         "<RESOURCE_NAME>": entity_name,
+        "<<RESOURCE_DESCRIPTION>>": f"apiVersion: v1\r\nkind: Pod\r\nmetadata:\r\n  name: {entity_name}\r\n  namespace: test\r\n  labels:\r\n    name: {entity_name}\r\nspec:\r\n  automountServiceAccountToken: false\r\n  containers:\r\n    - name: busybox-container\r\n      image: busybox:latest\r\n      imagePullPolicy: IfNotPresent\r\n      command:\r\n        - /bin/sh\r\n        - -c\r\n      args:\r\n        - while true; do echo 'imalive'; sleep 3600; done\r\n      resources:\r\n        limits:\r\n          cpu: 50m\r\n          memory: 64Mi\r\n        requests:\r\n          cpu: 10m\r\n          memory: 16Mi",
 
-        "<INSTANCE_NAME_PATTERN>": f"^{entity_name}-"
+        "<INSTANCE_NAME_PATTERN>": f"^{entity_name}-.*"
     }
 
 
