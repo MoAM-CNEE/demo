@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 13,
-  "iteration": 1756672072759,
+  "iteration": 1756678423586,
   "links": [],
   "panels": [
     {
@@ -1166,7 +1166,7 @@
           "decimals": 1,
           "format": "decbytes",
           "label": null,
-          "logBase": 1,
+          "logBase": 10,
           "max": null,
           "min": null,
           "show": true
@@ -1283,7 +1283,7 @@
           "decimals": 1,
           "format": "decbytes",
           "label": null,
-          "logBase": 1,
+          "logBase": 10,
           "max": null,
           "min": null,
           "show": true
@@ -1361,7 +1361,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "rate(target_packet_bytes_total{\n  target_service=\"message-service\"\n}[1m])",
+          "expr": "rate(target_packet_bytes_total{\n  target_service=\"message-service\"\n}[1m]) or vector(0)",
           "hide": false,
           "interval": "",
           "legendFormat": "AMoCNA",
@@ -1369,7 +1369,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\",\n    interface=\"eth0\"\n  }[1m] offset $experiments_time_offset)\n)",
+          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\",\n    interface=\"eth0\"\n  }[1m] offset $experiments_time_offset)\n) or vector(0)",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1400,7 +1400,7 @@
           "decimals": 1,
           "format": "decbytes",
           "label": null,
-          "logBase": 1,
+          "logBase": 10,
           "max": null,
           "min": null,
           "show": true
@@ -1451,9 +1451,9 @@
       },
       {
         "current": {
-          "selected": true,
-          "text": "1000000000",
-          "value": "1000000000"
+          "selected": false,
+          "text": "3220000000",
+          "value": "3220000000"
         },
         "description": null,
         "error": null,
@@ -1463,19 +1463,19 @@
         "options": [
           {
             "selected": true,
-            "text": "1000000000",
-            "value": "1000000000"
+            "text": "3220000000",
+            "value": "3220000000"
           }
         ],
-        "query": "1000000000",
+        "query": "3220000000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "selected": true,
-          "text": "1000000000",
-          "value": "1000000000"
+          "selected": false,
+          "text": "3550000000",
+          "value": "3550000000"
         },
         "description": null,
         "error": null,
@@ -1485,19 +1485,19 @@
         "options": [
           {
             "selected": true,
-            "text": "1000000000",
-            "value": "1000000000"
+            "text": "3550000000",
+            "value": "3550000000"
           }
         ],
-        "query": "1000000000",
+        "query": "3550000000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
           "selected": false,
-          "text": "3433s",
-          "value": "3433s"
+          "text": "2580s",
+          "value": "2580s"
         },
         "description": null,
         "error": null,
@@ -1507,11 +1507,11 @@
         "options": [
           {
             "selected": true,
-            "text": "3433s",
-            "value": "3433s"
+            "text": "2580s",
+            "value": "2580s"
           }
         ],
-        "query": "3433s",
+        "query": "2580s",
         "skipUrlSync": false,
         "type": "textbox"
       }
@@ -1525,5 +1525,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 21
+  "version": 22
 }
