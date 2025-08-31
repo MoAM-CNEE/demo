@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 13,
-  "iteration": 1756639125685,
+  "iteration": 1756672072759,
   "links": [],
   "panels": [
     {
@@ -900,7 +900,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"mirror-layer\"\n  }[1m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"state-layer\"\n  }[1m])\n) + \nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"hephaestus\"\n  }[1m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"themis-executor\"\n  }[1m])\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }[1m])\n)",
+          "expr": "sum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"mirror-layer\"\n  }[1m] offset $experiments_time_offset)\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"state-layer\"\n  }[1m] offset $experiments_time_offset)\n) + \nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"hephaestus\"\n  }[1m] offset $experiments_time_offset)\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"themis-executor\"\n  }[1m] offset $experiments_time_offset)\n) +\nsum by (deployment) (\n  rate(container_cpu_usage_seconds_total{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }[1m] offset $experiments_time_offset)\n)",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1019,7 +1019,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) -\n$prometheus_start_scenario_moam_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes\n",
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\"\n  } offset $experiments_time_offset\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\"\n  } offset $experiments_time_offset\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  } offset $experiments_time_offset\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  } offset $experiments_time_offset\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  } offset $experiments_time_offset\n) -\n$prometheus_start_scenario_moam_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes\n",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1135,7 +1135,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-openstack.*\",\n    interface=\"eth0\"\n  }[1m])\n)",
+          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-openstack.*\",\n    interface=\"eth0\"\n  }[1m] offset $experiments_time_offset)\n)",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1252,7 +1252,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-kubernetes.*\",\n    interface=\"eth0\"\n  }[1m])\n)",
+          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-kubernetes.*\",\n    interface=\"eth0\"\n  }[1m] offset $experiments_time_offset)\n)",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1369,7 +1369,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\",\n    interface=\"eth0\"\n  }[1m])\n)",
+          "expr": "sum by (deployment) (\n  rate(container_network_transmit_bytes_total{\n    namespace=\"mirror-layer\",\n    pod=~\"provider-dummy-message-service.*\",\n    interface=\"eth0\"\n  }[1m] offset $experiments_time_offset)\n)",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1429,7 +1429,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "1000000000",
           "value": "1000000000"
         },
@@ -1451,7 +1451,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "1000000000",
           "value": "1000000000"
         },
@@ -1473,7 +1473,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "1000000000",
           "value": "1000000000"
         },
@@ -1492,16 +1492,38 @@
         "query": "1000000000",
         "skipUrlSync": false,
         "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "3433s",
+          "value": "3433s"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "experiments_time_offset",
+        "options": [
+          {
+            "selected": true,
+            "text": "3433s",
+            "value": "3433s"
+          }
+        ],
+        "query": "3433s",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 20
+  "version": 21
 }
