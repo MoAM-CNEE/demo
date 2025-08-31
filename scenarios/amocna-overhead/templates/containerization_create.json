@@ -1,0 +1,7 @@
+{
+  "collectionName": "kubernetes",
+  "actionName": "AddResourceAction",
+  "params": {
+    "resourceDescription": "<<RESOURCE_DESCRIPTION>>"
+  }
+}

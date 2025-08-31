@@ -1,0 +1,12 @@
+{
+  "collectionName": "openstack",
+  "actionName": "AddInstanceAction",
+  "params": {
+    "region": "RegionOne",
+    "name": "<ENTITY_NAME>",
+    "count": "1",
+    "imageId": "f3294644-2c5d-45b0-8a86-40e2e77c3f90",
+    "flavorId": "f2559863-ef7d-416c-907e-4ea4043d4831",
+    "networkIds": "82793ea1-5980-49a5-9c38-a5bd9a19b350"
+  }
+}

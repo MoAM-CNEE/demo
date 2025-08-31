@@ -1,0 +1,10 @@
+{
+  "collectionName": "kubernetes",
+  "actionName": "DeleteResourceAction",
+  "params": {
+    "resourceType": "Pod",
+    "resourceName": "<RESOURCE_NAME>",
+    "namespace": "test",
+    "gracePeriodSeconds": "60"
+  }
+}
