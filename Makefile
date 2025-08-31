@@ -30,17 +30,25 @@ TARGET_RULES_PATH = $(TARGET_DIR)/$(RULES_FILENAME)
 
 NPD = --no-print-directory
 
+LOG_DIR := logs
+DATETIME := $(shell date +%Y%m%d_%H%M%S)
+LOG_FILE := $(LOG_DIR)/$(SCENARIO_NAME)_$(DATETIME).log
+
 # targets that aren't annotated with ## are not supposed to be run on their own
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 run: ## make run SCENARIO_NAME=sample | all stages of the scenario
-	@make $(NPD) log-time MSG="make run $(SCENARIO_NAME)"
-	@make $(NPD) upload-rules
-	@make $(NPD) init
-	@make $(NPD) actual-run
-	@make $(NPD) tear-down
+	@mkdir -p $(LOG_DIR)
+	@echo "Writing logs to $(LOG_FILE)"
+	@{ \
+		make $(NPD) log-time MSG="make run $(SCENARIO_NAME)"; \
+		make $(NPD) upload-rules; \
+		make $(NPD) init; \
+		make $(NPD) actual-run; \
+		make $(NPD) tear-down; \
+	} >> $(LOG_FILE) 2>&1
 
 upload-rules: ## make upload-rules SCENARIO_NAME=sample
 	@make $(NPD) log-time MSG="make upload rules"
