@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 13,
-  "iteration": 1756639125677,
+  "iteration": 1756639125681,
   "links": [],
   "panels": [
     {
@@ -248,7 +248,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) -\n$prometheus_start_scenario_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes",
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) -\n$prometheus_start_scenario_moam_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "monitoring-layer",
@@ -1011,7 +1011,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n)",
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) + sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) -\n$prometheus_start_scenario_amocna_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes",
           "hide": false,
           "interval": "",
           "legendFormat": "AMoCNA",
@@ -1019,7 +1019,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) -\n$prometheus_start_scenario_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes",
+          "expr": "sum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"mirror-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"state-layer\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"hephaestus\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"themis-executor\"\n  }\n) +\nsum by (deployment) (\n  container_memory_usage_bytes{\n    namespace=\"monitoring\",\n    pod=~\"prometheus-deployment.*\"\n  }\n) -\n$prometheus_start_scenario_moam_ram_usage_bytes +\n$prometheus_base_ram_usage_bytes\n",
           "hide": false,
           "interval": "",
           "legendFormat": "MoAM",
@@ -1108,7 +1108,29 @@
         "error": null,
         "hide": 0,
         "label": null,
-        "name": "prometheus_start_scenario_ram_usage_bytes",
+        "name": "prometheus_start_scenario_moam_ram_usage_bytes",
+        "options": [
+          {
+            "selected": true,
+            "text": "1000000000",
+            "value": "1000000000"
+          }
+        ],
+        "query": "1000000000",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1000000000",
+          "value": "1000000000"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "prometheus_start_scenario_amocna_ram_usage_bytes",
         "options": [
           {
             "selected": true,
@@ -1130,5 +1152,5 @@
   "timezone": "",
   "title": "Scenario \"Overhead\"",
   "uid": "2L8ZqolHz",
-  "version": 17
+  "version": 19
 }
