@@ -1,3 +1,13 @@
+1. Run k8s-scaling.
+2. Select the time range to the period of performing the scenario. Copy the data from `front-end latency` plot (Inspect -> Data -> Download CSV). Store the exported data in the results directory.
+3. Deploy SockShop.
+4. Run amocna-k8s-scaling.
+5. The same as 2.
+6. Adjust `experiments_time_offset`.
+7. Document `Comparison` and `loadtest replicas` plots.
+8. Delete SockShop.
+
+Metrics used:
 ``` 
 TAG: front-end-latency
 QUERY: sum(rate(request_duration_seconds_sum{name="front-end"}[1m])) * 1000 / sum(rate(request_duration_seconds_count{name="front-end"}[1m])) 
